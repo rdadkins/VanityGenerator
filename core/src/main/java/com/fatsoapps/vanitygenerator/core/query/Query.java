@@ -124,7 +124,7 @@ public class Query {
     }
 
     public BigInteger getOdds() {
-        return Utils.getOdds(query, placement == SearchPlacement.BEGINS, searchCase == SearchCase.MATCH);
+        return Utils.getOdds(getRawQuery(), placement == SearchPlacement.BEGINS, searchCase == SearchCase.MATCH);
     }
 
     public void updateNetwork(Network network) {
