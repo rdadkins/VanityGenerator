@@ -18,9 +18,9 @@ public class PoolSearch implements Runnable {
     private GlobalNetParams netParams;
     private QueryPool pool;
     private long updateAmount = 1000;
-    private static long generated = 0;
-    private static long FINAL_GENERATED;
-    private static boolean taskCompletedCalled = false;
+    private static volatile long generated = 0;
+    private static volatile long FINAL_GENERATED;
+    private static volatile boolean taskCompletedCalled = false;
 
     /**
      * Creates a PoolSearch thread from a listener, an existing QueryPool instance, and an existing GlobalNetParams
@@ -32,7 +32,7 @@ public class PoolSearch implements Runnable {
         this.netParams = netParams;
     }
 
-    public synchronized void run() {
+    public void run() {
         ECKey key;
         Matcher matcher;
         while (!Thread.interrupted() && pool.containsQueries()) {
@@ -64,7 +64,7 @@ public class PoolSearch implements Runnable {
         }
     }
 
-    private synchronized void setGeneratedAmount() {
+    private void setGeneratedAmount() {
         FINAL_GENERATED = generated;
     }
 
