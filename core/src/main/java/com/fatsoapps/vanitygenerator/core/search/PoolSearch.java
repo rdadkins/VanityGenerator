@@ -18,6 +18,9 @@ public class PoolSearch implements Runnable {
     private GlobalNetParams netParams;
     private QueryPool pool;
     private long updateAmount = 1000;
+    private static long generated = 0;
+    private static long FINAL_GENERATED;
+    private static boolean taskCompletedCalled = false;
 
     /**
      * Creates a PoolSearch thread from a listener, an existing QueryPool instance, and an existing GlobalNetParams
@@ -29,51 +32,62 @@ public class PoolSearch implements Runnable {
         this.netParams = netParams;
     }
 
-    public void run() {
-        ECKey key = new ECKey();
+    public synchronized void run() {
+        ECKey key;
         Matcher matcher;
-        long generated = 1;
         while (!Thread.interrupted() && pool.containsQueries()) {
+            key = new ECKey();
+            generated++;
             if (pool.containsCompressedQueries()) {
                 matcher = getMatcher(key, true);
                 if (matcher.matches()) {
-                    pool.updateQueryList(matcher.group(1));
-                    if (listener != null) listener.onAddressFound(key, true);
+                    pool.updateQueryList(matcher.group(1), true);
+                    if (!pool.containsQueries()) setGeneratedAmount();
+                    if (listener != null) listener.onAddressFound(key, generated, true);
                 }
             }
             if (pool.containsUncompressedQueries()) {
                 matcher = getMatcher(key, false);
                 if (matcher.matches()) {
-                    pool.updateQueryList(matcher.group(1));
-                    if (listener != null) listener.onAddressFound(key, false);
+                    pool.updateQueryList(matcher.group(1), false);
+                    if (!pool.containsQueries()) setGeneratedAmount();
+                    if (listener != null) listener.onAddressFound(key, generated, false);
                 }
             }
             if (generated % updateAmount == 0 && listener != null) {
                 listener.updateBurstGenerated(generated, updateAmount);
             }
-            key = new ECKey();
-            generated++;
         }
-        if (listener != null) listener.onTaskCompleted(generated);
+        if (listener != null && !taskCompletedCalled && FINAL_GENERATED != 0) {
+            taskCompletedCalled = true;
+            listener.onTaskCompleted(FINAL_GENERATED);
+        }
     }
 
-    public void setUpdateAmount(long updateAmount) {
+    private synchronized void setGeneratedAmount() {
+        FINAL_GENERATED = generated;
+    }
+
+    public PoolSearch setUpdateAmount(long updateAmount) {
         this.updateAmount = updateAmount;
+        return this;
     }
 
-    public void registerListener(BaseSearchListener listener) {
+    public PoolSearch registerListener(BaseSearchListener listener) {
         this.listener = listener;
+        return this;
     }
 
-    public void unregisterListener() {
+    public PoolSearch unregisterListener() {
         listener = null;
+        return this;
     }
 
     private Matcher getMatcher(ECKey key, boolean compressed) {
         if (compressed) {
             return pool.getPattern().matcher(key.toAddress(netParams).toString());
         }
-        return pool.getUncompressedPattern().matcher(key.toAddress(netParams).toString());
+        return pool.getUncompressedPattern().matcher(key.decompress().toAddress(netParams).toString());
     }
 
 }
