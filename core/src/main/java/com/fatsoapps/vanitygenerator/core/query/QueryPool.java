@@ -22,12 +22,13 @@ public class QueryPool {
     private final ArrayList<Query> queries;
     private Pattern pattern;
     private Pattern uncompressedPattern;
-    private boolean containsCompressed;
-    private boolean containsUncompressed;
-    private boolean wasUpdated = false;
     private GlobalNetParams netParams;
     private int desiredThreadCount;
     private int maxThreadCount;
+    private boolean containsCompressed;
+    private boolean containsCompressedUpdated = false;
+    private boolean containsUncompressed;
+    private boolean containsUncompressedUpdated = false;
 
     private static QueryPool instance;
 
@@ -72,9 +73,7 @@ public class QueryPool {
     public synchronized void addQuery(Query query) {
         if (queries.contains(query)) return;
         queries.add(query);
-        containsCompressed |= query.isCompressed();
-        containsUncompressed |= !query.isCompressed();
-        wasUpdated = true;
+        updateParameters();
     }
 
     public synchronized void removeQuery(int originalHashCode) {
@@ -89,9 +88,7 @@ public class QueryPool {
     public synchronized void removeQuery(Query query) {
         if (query == null) return;
         queries.remove(query);
-        updateContainsCompressed();
-        updateContainsUncompressed();
-        wasUpdated = true;
+        updateParameters();
     }
 
     public synchronized void updateQuery(Query newQuery, int originalHashCode) {
@@ -105,9 +102,7 @@ public class QueryPool {
         }
         if (index == -1) return;
         queries.set(index, newQuery);
-        updateContainsCompressed();
-        updateContainsUncompressed();
-        wasUpdated = true;
+        updateParameters();
     }
 
     public boolean contains(Query query) {
@@ -121,38 +116,46 @@ public class QueryPool {
         return contains;
     }
 
+    private void updateParameters() {
+        updateContainsCompressedType(true);
+        updateContainsCompressedType(false);
+        updateCompressedPattern();
+        updateUncompressedPattern();
+    }
+
     public boolean containsQueries() {
         return queries.size() > 0;
     }
 
     public boolean containsCompressedQueries() {
+        if (containsCompressedUpdated) {
+            updateContainsCompressedType(true);
+            containsCompressedUpdated = false;
+        }
         return containsCompressed;
     }
 
     public boolean containsUncompressedQueries() {
+        if (containsUncompressedUpdated) {
+            updateContainsCompressedType(false);
+            containsUncompressedUpdated = false;
+        }
         return containsUncompressed;
     }
 
-    private void updateContainsCompressed() {
-        boolean containsCompressed = false;
+    private void updateContainsCompressedType(boolean compressedType) {
+        boolean containsType = false;
         for (Query query: queries) {
-            if (query.isCompressed()) {
-                containsCompressed = true;
+            if (query.isCompressed() == compressedType) {
+                containsType = true;
                 break;
             }
         }
-        this.containsCompressed = containsCompressed;
-    }
-
-    private void updateContainsUncompressed() {
-        boolean containsUncompressed = false;
-        for (Query query: queries) {
-            if (!query.isCompressed()) {
-                containsUncompressed = true;
-                break;
-            }
+        if (compressedType) {
+            containsCompressed = containsType;
+        } else {
+            containsUncompressed = containsType;
         }
-        this.containsUncompressed = containsUncompressed;
     }
 
     public int getAmountOfQueries() {
@@ -160,9 +163,10 @@ public class QueryPool {
     }
 
     public synchronized Pattern getPattern() {
-        if (wasUpdated || pattern == null) {
+        if (containsCompressedUpdated || pattern == null) {
+            System.out.println("Updating pattern");
             updateCompressedPattern();
-            wasUpdated = false;
+            containsCompressedUpdated = false;
         }
         return pattern;
     }
@@ -172,9 +176,9 @@ public class QueryPool {
     }
 
     public synchronized Pattern getUncompressedPattern() {
-        if (wasUpdated || uncompressedPattern == null) {
+        if (containsUncompressedUpdated || uncompressedPattern == null) {
             updateUncompressedPattern();
-            wasUpdated = false;
+            containsUncompressedUpdated = false;
         }
         return uncompressedPattern;
     }
@@ -217,10 +221,10 @@ public class QueryPool {
      * @param patternFound - the pattern that has been found within this pool.
      * @see com.fatsoapps.vanitygenerator.core.search.SearchPlacement
      */
-    public void updateQueryList(String patternFound) {
+    public void updateQueryList(String patternFound, boolean compressed) {
         ArrayList<Query> matchedQueries = new ArrayList<Query>();
         for (Query query: queries) {
-            if (!query.isFindUnlimited() && query.matches(patternFound)) {
+            if (!query.isFindUnlimited() && query.isCompressed() == compressed && query.matches(patternFound)) {
                 matchedQueries.add(query);
             }
         }
@@ -230,7 +234,7 @@ public class QueryPool {
         for (Query matched: matchedQueries) { // We should end up with one, but this is here to prevent any exceptions
             queries.remove(matched);
         }
-        wasUpdated = true;
+        updateParameters();
     }
 
     /**
