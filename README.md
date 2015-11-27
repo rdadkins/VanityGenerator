@@ -1,7 +1,7 @@
 # VanityGenerator
 A Java implementation of Bitcoin address Vanity Generator
 
-This project is inspired by <a href="https://bitcointalk.org/index.php?topic=25804.0">Vanitygen</a> but built in Java that relies on <a href="https://github.com/bitcoinj/bitcoinj">bitcoinJ</a>.
+This project is inspired by <a href="https://bitcointalk.org/index.php?topic=25804.0">Vanitygen</a> that is built in Java and relies on <a href="https://github.com/bitcoinj/bitcoinj">bitcoinJ</a>.
 
 What it does:
 * Searches for queries supplied by the user in a single or multi-threaded approach.
