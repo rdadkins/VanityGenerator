@@ -15,14 +15,23 @@ import java.util.regex.Pattern;
 import static com.fatsoapps.vanitygenerator.core.search.SearchCase.*;
 import static com.fatsoapps.vanitygenerator.core.search.SearchPlacement.*;
 
-public class Query {
+/**
+ * Query is an extension of RegexQuery which is meant to be an easier to use and more flexible Query type. Definitions
+ * of each Query typically breaks down to a query string, position, case sensitivity, and an associated Prefix or
+ * Network to search on. Query allows for each query input string to change, modification of where a query shows up in
+ * a string, and case sensitivity.
+ * @see com.fatsoapps.vanitygenerator.core.query.RegexQuery
+ * @see com.fatsoapps.vanitygenerator.core.search.SearchPlacement
+ * @see com.fatsoapps.vanitygenerator.core.search.SearchCase
+ * @see com.fatsoapps.vanitygenerator.core.network.GlobalNetParams
+ * @see com.fatsoapps.vanitygenerator.core.network.Prefix
+ * @see com.fatsoapps.vanitygenerator.networks.Network
+ */
+public class Query extends RegexQuery {
 
     private String query;
     private SearchPlacement placement;
     private SearchCase searchCase;
-    private boolean compressed;
-    private boolean findUnlimited;
-    private Pattern pattern;
     private Prefix[] associatedPrefixes;
 
     public Query(String query, boolean begins, boolean match, boolean compressed, Prefix prefix) {
@@ -30,10 +39,10 @@ public class Query {
     }
 
     public Query(String query, boolean begins, boolean match, boolean compressed, boolean findUnlimited, Prefix prefix) {
+        super(findUnlimited);
         this.placement = begins ? BEGINS : CONTAINS;
         this.searchCase = match ? MATCH : IGNORE;
         this.compressed = compressed;
-        this.findUnlimited = findUnlimited;
         associatedPrefixes = new Prefix[] {prefix};
         if (begins) {
             query = getBeginsQuery(query);
@@ -69,10 +78,10 @@ public class Query {
     }
 
     public Query(String query, SearchPlacement placement, SearchCase searchCase, boolean compressed, boolean findUnlimited, Network network) {
+        super(findUnlimited);
         this.placement = placement;
         this.searchCase = searchCase;
         this.compressed = compressed;
-        this.findUnlimited = findUnlimited;
         ArrayList<Prefix> prefixes = Prefix.getAddressPrefixes(network);
         associatedPrefixes = prefixes.toArray(new Prefix[prefixes.size()]);
         if (placement == BEGINS) {
@@ -101,7 +110,7 @@ public class Query {
     }
 
     /**
-     * Returns the rawQuery that was provided to make this Query.
+     * Returns the raw version of the query string that was provided to make this Query.
      */
     public String getRawQuery() {
         return query.substring(query.lastIndexOf(')') + 1);
@@ -113,14 +122,6 @@ public class Query {
 
     public SearchCase getSearchCase() {
         return searchCase;
-    }
-
-    public boolean isCompressed() {
-        return compressed;
-    }
-
-    public boolean isFindUnlimited() {
-        return findUnlimited;
     }
 
     public BigInteger getOdds() {
@@ -181,14 +182,6 @@ public class Query {
         updatePattern();
     }
 
-    public void setCompression(boolean compressed) {
-        this.compressed = compressed;
-    }
-
-    public void setFindUnlimited(boolean findUnlimited) {
-        this.findUnlimited = findUnlimited;
-    }
-
     /**
      * Check to see if this Query matches the ECKey in relation to netParams. Note: you do NOT need to handle
      * key compression since this method handles compression before checking.
@@ -201,10 +194,7 @@ public class Query {
         if (pattern == null) {
             updatePattern();
         }
-        if (!isCompressed()) {
-            key = key.decompress();
-        }
-        return matches(key.toAddress(netParams).toString());
+        return super.matches(key, netParams);
     }
 
     /**
@@ -218,7 +208,7 @@ public class Query {
         if (pattern == null) {
             updatePattern();
         }
-        return pattern.matcher(input).find();
+        return super.matches(input);
     }
 
     private void updatePattern() {
