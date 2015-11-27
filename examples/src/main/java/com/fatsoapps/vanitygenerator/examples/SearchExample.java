@@ -28,16 +28,16 @@ public class SearchExample implements BaseSearchListener {
         singleSearchThread.run();
     }
 
-    public void onAddressFound(ECKey key, long amountGenerated, boolean compressed) {
+    public void onAddressFound(ECKey key, long amountGenerated, long speed, boolean compressed) {
         key = compressed ? key : key.decompress();
         System.out.printf("%d addresses generated to find %s%n", amountGenerated, key.toAddress(netParams));
     }
 
-    public void updateBurstGenerated(long totalGenerated, long burstGenerated) {
+    public void updateBurstGenerated(long totalGenerated, long burstGenerated, long speed) {
         System.out.printf("%d generated since last update. %d have been generated.%n", burstGenerated, totalGenerated);
     }
 
-    public void onTaskCompleted(long totalGenerated) {
+    public void onTaskCompleted(long totalGenerated, long speed) {
         System.out.printf("Task has finished. %d have been generated.%n", totalGenerated);
     }
 }
