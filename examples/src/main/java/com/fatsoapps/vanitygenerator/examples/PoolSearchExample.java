@@ -27,7 +27,7 @@ public class PoolSearchExample implements BaseSearchListener {
 
     public void startExample() {
         Query easyQuery = new Query("FUN", true, false, true, netParams.getNetwork());
-        Query hardQuery = new Query("FUN", true, true, false, netParams.getNetwork());
+        Query hardQuery = new Query("FUNN", true, true, false, netParams.getNetwork());
         System.out.println("Odds: 1/" + easyQuery.getOdds());
         System.out.println("Odds: 1/" + hardQuery.getOdds());
         QueryPool pool = QueryPool.getInstance(netParams.getNetwork(), false);
@@ -42,19 +42,19 @@ public class PoolSearchExample implements BaseSearchListener {
         service.shutdown();
     }
 
-    public void onAddressFound(ECKey key, long amountGenerated, boolean isCompressed) {
+    public void onAddressFound(ECKey key, long amountGenerated, long speed, boolean isCompressed) {
         if (!isCompressed) {
             key = key.decompress();
         }
         System.out.printf("%s %s found after %d attempts.%n", isCompressed ? "[Compressed]" : "[Uncompressed]", key.toAddress(netParams), amountGenerated);
     }
 
-    public void updateBurstGenerated(long totalGenerated, long burstGenerated) {
-        System.out.printf("%d generated since last update, %d total generated.%n", burstGenerated, totalGenerated);
+    public void updateBurstGenerated(long totalGenerated, long burstGenerated, long speed) {
+        System.out.printf("%d generated since last update, %d total generated. Speed: %d.%n", burstGenerated, totalGenerated, speed);
     }
 
-    public void onTaskCompleted(long totalGenerated) {
-        System.out.printf("Task completed with %d addresses generated.%n", totalGenerated);
+    public void onTaskCompleted(long totalGenerated, long speed) {
+        System.out.printf("Task completed with %d addresses generated. Average speed: %d.%n", totalGenerated, speed);
     }
 
 }
