@@ -18,6 +18,7 @@ public class PoolSearch implements Runnable {
     private GlobalNetParams netParams;
     private QueryPool pool;
     private long updateAmount = 1000;
+    private static volatile long startTime = 0;
     private static volatile long generated = 0;
     private static volatile long FINAL_GENERATED;
     private static volatile boolean taskCompletedCalled = false;
@@ -30,6 +31,9 @@ public class PoolSearch implements Runnable {
         this.listener = listener;
         this.pool = pool;
         this.netParams = netParams;
+        if (startTime == 0) {
+            startTime = System.currentTimeMillis();
+        }
     }
 
     public void run() {
@@ -43,7 +47,7 @@ public class PoolSearch implements Runnable {
                 if (matcher.matches()) {
                     pool.updateQueryList(matcher.group(1), true);
                     if (!pool.containsQueries()) setGeneratedAmount();
-                    if (listener != null) listener.onAddressFound(key, generated, true);
+                    if (listener != null) listener.onAddressFound(key, generated, getGeneratedPerSecond(), true);
                 }
             }
             if (pool.containsUncompressedQueries()) {
@@ -51,16 +55,25 @@ public class PoolSearch implements Runnable {
                 if (matcher.matches()) {
                     pool.updateQueryList(matcher.group(1), false);
                     if (!pool.containsQueries()) setGeneratedAmount();
-                    if (listener != null) listener.onAddressFound(key, generated, false);
+                    if (listener != null) listener.onAddressFound(key, generated, getGeneratedPerSecond(), false);
                 }
             }
             if (generated % updateAmount == 0 && listener != null) {
-                listener.updateBurstGenerated(generated, updateAmount);
+                listener.updateBurstGenerated(generated, updateAmount, getGeneratedPerSecond());
             }
         }
         if (listener != null && !taskCompletedCalled && FINAL_GENERATED != 0) {
             taskCompletedCalled = true;
-            listener.onTaskCompleted(FINAL_GENERATED);
+            listener.onTaskCompleted(FINAL_GENERATED, getGeneratedPerSecond());
+        }
+        startTime = 0;
+    }
+
+    private long getGeneratedPerSecond() {
+        try {
+            return generated / ((System.currentTimeMillis() - startTime) / 1000);
+        } catch (ArithmeticException ex) {
+            return generated / 1000;
         }
     }
 
