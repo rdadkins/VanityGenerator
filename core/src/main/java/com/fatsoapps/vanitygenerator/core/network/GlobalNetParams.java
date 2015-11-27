@@ -14,6 +14,8 @@ import java.util.ArrayList;
  * with the decimal version which is typically found in chainparams.cpp [base58Prefixes] within the source code of
  * their desired coin. An optional script header can be used as well. This class is only meant to contain headers of
  * different networks, so this does not contain items such as port configuration.
+ * NOTE: This class is similar to org.bitcoinj.core.Context in bitcoinj 0.13+ but Context will not be used since this
+ * class was under development before Context's debut, and it is not readily available for use.
  * @see org.bitcoinj.core.ECKey
  * @see org.bitcoinj.core.Address
  */
