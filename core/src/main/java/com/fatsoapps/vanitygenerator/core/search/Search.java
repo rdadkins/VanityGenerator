@@ -20,6 +20,8 @@ public class Search implements Runnable {
     private GlobalNetParams netParams;
     private ArrayList<Query> queries;
     private long updateAmount = 1000;
+    private long generated;
+    private long startTime;
 
     public Search(BaseSearchListener listener, GlobalNetParams netParams, long updateAmount, Query... queries) {
         this(listener, netParams, queries);
@@ -30,18 +32,18 @@ public class Search implements Runnable {
         this.listener = listener;
         this.netParams = netParams;
         this.queries = new ArrayList<Query>(Arrays.asList(queries));
+        startTime = System.currentTimeMillis();
     }
 
     public void run() {
         ECKey key;
-        long generated = 0;
         while (!Thread.interrupted() && queries.size() > 0) {
             key = new ECKey();
             generated++;
             for (Query query: queries) {
                 if (query.matches(key, netParams)) {
                     if (listener != null) {
-                        listener.onAddressFound(key, generated, query.isCompressed());
+                        listener.onAddressFound(key, generated, getGeneratedPerSecond(), query.isCompressed());
                     }
                     if (!query.isFindUnlimited()) {
                         queries.remove(query);
@@ -50,11 +52,19 @@ public class Search implements Runnable {
                 }
             }
             if (generated % updateAmount == 0 && listener != null) {
-                listener.updateBurstGenerated(generated, updateAmount);
+                listener.updateBurstGenerated(generated, updateAmount, getGeneratedPerSecond());
             }
         }
         if (listener != null) {
-            listener.onTaskCompleted(generated);
+            listener.onTaskCompleted(generated, getGeneratedPerSecond());
+        }
+    }
+
+    private long getGeneratedPerSecond() {
+        try {
+            return generated / ((System.currentTimeMillis() - startTime) / 1000);
+        } catch (ArithmeticException ex) {
+            return generated / 1000;
         }
     }
 
