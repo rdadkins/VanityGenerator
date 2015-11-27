@@ -11,9 +11,10 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 /**
- * QueryPool is collection of queries defined by the user that can be accessed anywhere by calling getInstance().
+ * QueryPool is collection of Query's defined by the user that can be accessed anywhere by calling getInstance().
  * General usage is to create threads that rely on the Query's within QueryPool and to add / update / delete
- * accordingly.
+ * accordingly. RegexQuery's are not included in this class since each RQ can contain multiple sub-queries which cannot
+ * be easily handled and removed when a match is found.
  * @see com.fatsoapps.vanitygenerator.core.search.PoolSearch to see usage of QueryPool.
  */
 public class QueryPool {
