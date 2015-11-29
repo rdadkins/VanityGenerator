@@ -21,7 +21,11 @@ public class RegexQuery {
     protected boolean compressed;
     protected boolean findUnlimited;
 
-    public RegexQuery(boolean findUnlimited) {
+    /**
+     * Default constructor for Query.super() calls.
+     * @param findUnlimited - specifies whether to delete this Query from a collection when this Query is found.
+     */
+    protected RegexQuery(boolean findUnlimited) {
         this.findUnlimited = findUnlimited;
     }
 
@@ -43,6 +47,14 @@ public class RegexQuery {
         this.findUnlimited = findUnlimited;
     }
 
+    public boolean isCompressed() {
+        return compressed;
+    }
+
+    public void setCompresion(boolean compressed) {
+        this.compressed = compressed;
+    }
+
     public boolean matches(ECKey key, GlobalNetParams netParams) {
         if (!compressed) {
             key = key.decompress();
@@ -52,14 +64,6 @@ public class RegexQuery {
 
     public boolean matches(String input) {
         return pattern.matcher(input).find();
-    }
-
-    public boolean isCompressed() {
-        return compressed;
-    }
-
-    public void setCompresion(boolean compressed) {
-        this.compressed = compressed;
     }
 
 }
