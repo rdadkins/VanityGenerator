@@ -1,8 +1,5 @@
 package com.fatsoapps.vanitygenerator.core.network;
 
-
-import com.fatsoapps.vanitygenerator.networks.Network;
-
 import java.util.ArrayList;
 
 /**

@@ -1,6 +1,5 @@
 package com.fatsoapps.vanitygenerator.core.network;
 
-import com.fatsoapps.vanitygenerator.networks.Network;
 import org.bitcoinj.core.NetworkParameters;
 
 import javax.annotation.Nullable;
