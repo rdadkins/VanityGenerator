@@ -5,8 +5,7 @@ import java.util.ArrayList;
 
 /**
  * Network is a collection of defined crypto currencies with their pre-configured address header, private key
- * headers, and an optional P2SH header. Since this list can get quite large, it would be wise to exclude it from
- * mobile based apps due to restricted memory space.
+ * headers, and an optional P2SH header.
  */
 public enum Network {
 
