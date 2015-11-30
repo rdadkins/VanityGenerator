@@ -5,10 +5,9 @@ import com.fatsoapps.vanitygenerator.core.query.Query;
 import com.fatsoapps.vanitygenerator.core.query.RegexQuery;
 import com.fatsoapps.vanitygenerator.core.search.BaseSearchListener;
 import com.fatsoapps.vanitygenerator.core.search.Search;
-import com.fatsoapps.vanitygenerator.networks.Network;
+import com.fatsoapps.vanitygenerator.core.network.Network;
 import org.bitcoinj.core.ECKey;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -16,7 +15,7 @@ import java.util.regex.Pattern;
  */
 public class RegexSearchExample implements BaseSearchListener {
 
-    private static final GlobalNetParams netParams = GlobalNetParams.getAndSet(Network.BITCOIN);
+    private static final GlobalNetParams netParams = GlobalNetParams.get(Network.BITCOIN);
 
     public static void main(String[] args) {
         new RegexSearchExample().startExample();

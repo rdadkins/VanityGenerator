@@ -4,7 +4,7 @@ import com.fatsoapps.vanitygenerator.core.network.GlobalNetParams;
 import com.fatsoapps.vanitygenerator.core.query.Query;
 import com.fatsoapps.vanitygenerator.core.search.BaseSearchListener;
 import com.fatsoapps.vanitygenerator.core.search.Search;
-import com.fatsoapps.vanitygenerator.networks.Network;
+import com.fatsoapps.vanitygenerator.core.network.Network;
 import org.bitcoinj.core.ECKey;
 
 /**
@@ -15,7 +15,7 @@ import org.bitcoinj.core.ECKey;
  */
 public class SearchExample implements BaseSearchListener {
 
-    private final static GlobalNetParams netParams = GlobalNetParams.getAndSet(Network.BITCOIN);
+    private final static GlobalNetParams netParams = GlobalNetParams.get(Network.BITCOIN);
 
     public static void main(String[] args) {
         new SearchExample().startExample();

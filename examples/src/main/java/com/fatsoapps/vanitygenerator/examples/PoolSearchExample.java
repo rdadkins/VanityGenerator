@@ -5,7 +5,7 @@ import com.fatsoapps.vanitygenerator.core.query.Query;
 import com.fatsoapps.vanitygenerator.core.query.QueryPool;
 import com.fatsoapps.vanitygenerator.core.search.BaseSearchListener;
 import com.fatsoapps.vanitygenerator.core.search.PoolSearch;
-import com.fatsoapps.vanitygenerator.networks.Network;
+import com.fatsoapps.vanitygenerator.core.network.Network;
 import org.bitcoinj.core.ECKey;
 
 import java.util.Random;
@@ -19,7 +19,7 @@ import java.util.concurrent.Executors;
  */
 public class PoolSearchExample implements BaseSearchListener {
 
-    private static final GlobalNetParams netParams = GlobalNetParams.getAndSet(Network.BITCOIN);
+    private static final GlobalNetParams netParams = GlobalNetParams.get(Network.BITCOIN);
 
     public static void main(String[] args) {
         new PoolSearchExample().startExample();
