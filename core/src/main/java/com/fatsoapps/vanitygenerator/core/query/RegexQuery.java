@@ -66,4 +66,16 @@ public class RegexQuery {
         return pattern.matcher(input).find();
     }
 
+    public int hashCode() {
+        int hash = 17;
+        hash += 23 * (hash + (findUnlimited ? 17 : 7));
+        hash += 23 * (hash + (compressed ? 17 : 7));
+        hash += 23 * (hash + (pattern != null ? pattern.hashCode() : 7));
+        return hash;
+    }
+
+    public boolean equals(RegexQuery other) {
+        return this.hashCode() == other.hashCode();
+    }
+
 }
