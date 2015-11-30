@@ -5,7 +5,7 @@ import com.fatsoapps.vanitygenerator.core.search.SearchCase;
 import com.fatsoapps.vanitygenerator.core.search.SearchPlacement;
 import com.fatsoapps.vanitygenerator.core.network.Prefix;
 import com.fatsoapps.vanitygenerator.core.tools.Utils;
-import com.fatsoapps.vanitygenerator.networks.Network;
+import com.fatsoapps.vanitygenerator.core.network.Network;
 import org.bitcoinj.core.ECKey;
 
 import java.math.BigInteger;
@@ -25,7 +25,7 @@ import static com.fatsoapps.vanitygenerator.core.search.SearchPlacement.*;
  * @see com.fatsoapps.vanitygenerator.core.search.SearchCase
  * @see com.fatsoapps.vanitygenerator.core.network.GlobalNetParams
  * @see com.fatsoapps.vanitygenerator.core.network.Prefix
- * @see com.fatsoapps.vanitygenerator.networks.Network
+ * @see com.fatsoapps.vanitygenerator.core.network.Network
  */
 public class Query extends RegexQuery {
 
