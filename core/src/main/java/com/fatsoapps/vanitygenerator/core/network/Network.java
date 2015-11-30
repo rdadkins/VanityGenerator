@@ -1,4 +1,4 @@
-package com.fatsoapps.vanitygenerator.networks;
+package com.fatsoapps.vanitygenerator.core.network;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
