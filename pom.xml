@@ -13,6 +13,7 @@
         <module>networks</module>
         <module>utils</module>
         <module>core</module>
+        <module>examples</module>
     </modules>
 
     <name>Vanity Generator Parent</name>
@@ -24,6 +25,20 @@
             <groupId>org.bitcoinj</groupId>
             <artifactId>bitcoinj-core</artifactId>
             <version>0.12.3</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bitcoinj</groupId>
+                    <artifactId>examples</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.bitcoinj</groupId>
+                    <artifactId>orchid</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.lambdaworks</groupId>
+                    <artifactId>scrypt</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>

@@ -3,7 +3,7 @@ package com.fatsoapps.vanitygenerator.core.tools;
 import java.math.BigInteger;
 
 /**
- * Utils for the Vanity Generator Core
+ * Utils for Vanity Generator Core
  */
 public class Utils {
 
