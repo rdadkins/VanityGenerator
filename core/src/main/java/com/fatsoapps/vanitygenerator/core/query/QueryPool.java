@@ -1,12 +1,13 @@
 package com.fatsoapps.vanitygenerator.core.query;
 
 import com.fatsoapps.vanitygenerator.core.network.IllegalDecimalVersionException;
-import com.fatsoapps.vanitygenerator.networks.Network;
+import com.fatsoapps.vanitygenerator.core.network.Network;
 import com.fatsoapps.vanitygenerator.core.network.Prefix;
 import com.fatsoapps.vanitygenerator.core.network.GlobalNetParams;
 import com.fatsoapps.vanitygenerator.core.search.SearchPlacement;
 import com.fatsoapps.vanitygenerator.core.tools.RegexBuilder;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
@@ -38,10 +39,8 @@ public class QueryPool {
      * @return instance of QueryPool.
      * @throws Exception if instance does not exist.
      */
-    public static synchronized QueryPool getInstance() throws Exception {
-        if (instance == null) {
-            throw new Exception("Instance does not exist!");
-        }
+    @Nullable
+    public static synchronized QueryPool getInstance() {
         return instance;
     }
 
@@ -62,13 +61,13 @@ public class QueryPool {
 
     private QueryPool(Network network) {
         queries = new ArrayList<Query>();
-        netParams = GlobalNetParams.getTempInstance(network);
+        netParams = new GlobalNetParams(network);
         this.network = network;
     }
 
     private QueryPool(int publicKeyHeader, int p2shHeader, int privateKeyHeader) throws IllegalDecimalVersionException {
         queries = new ArrayList<Query>();
-        netParams = GlobalNetParams.getTempInstance(publicKeyHeader, p2shHeader, privateKeyHeader);
+        netParams = new GlobalNetParams(publicKeyHeader, p2shHeader, privateKeyHeader);
     }
 
     public synchronized void addQuery(Query query) {
@@ -196,7 +195,7 @@ public class QueryPool {
     public void updateNetwork(Network network) {
         if (this.network != network) {
             this.network = network;
-            updateNetwork(GlobalNetParams.getTempInstance(network));
+            updateNetwork(new GlobalNetParams(network));
         }
     }
 
