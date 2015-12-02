@@ -12,9 +12,14 @@
     </parent>
 
     <artifactId>core</artifactId>
+    <version>0.1.0-beta</version>
 
     <name>Vanity Generator</name>
     <description>A Java implementation of Bitcoin Vanity Address Generation</description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <developers>
         <developer>

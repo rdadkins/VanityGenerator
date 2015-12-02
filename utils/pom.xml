@@ -10,5 +10,10 @@
     </parent>
 
     <artifactId>utils</artifactId>
+    <version>0.1.0-beta</version>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
 </project>

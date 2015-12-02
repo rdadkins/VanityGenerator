@@ -19,6 +19,10 @@
     <description>A wrapped config for all VanityGenerator modules</description>
     <url>http://www.fatsoapps.com</url>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.bitcoinj</groupId>

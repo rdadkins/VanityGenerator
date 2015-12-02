@@ -12,6 +12,7 @@
     </parent>
 
     <artifactId>examples</artifactId>
+    <version>0.1.0-beta</version>
 
     <name>Examples of Vanity Generator</name>
     <description>Real life examples of how to use and implement various parts of Vanity Generator</description>
@@ -24,5 +25,8 @@
         </dependency>
     </dependencies>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
     
 </project>
