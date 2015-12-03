@@ -23,12 +23,9 @@ public enum Network {
     private int p2shHeader = -1;
 
     Network(int addressHeader, int p2shHeader, int privateKeyHeader) throws ExceptionInInitializerError {
-        checkInRange(addressHeader);
+        this(addressHeader, privateKeyHeader);
         checkInRange(p2shHeader);
-        checkInRange(privateKeyHeader);
-        this.addressHeader = addressHeader;
         this.p2shHeader = p2shHeader;
-        this.privateKeyHeader = privateKeyHeader;
     }
 
     Network(int addressHeader, int privateKeyHeader) throws ExceptionInInitializerError {
