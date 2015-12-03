@@ -1,7 +1,5 @@
 package com.fatsoapps.vanitygenerator.core.network;
 
-import org.bitcoinj.core.NetworkParameters;
-
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 
@@ -45,7 +43,7 @@ public enum Network {
 
     public int getP2shHeader() throws Exception {
         if (p2shHeader == -1) {
-            throw new Exception("P2SH Header not initialized: " + p2shHeader);
+            throw new Exception(String.format("P2SH Header not initialized; %s does not define a P2SH Header.", name()));
         }
         return p2shHeader;
     }
@@ -85,11 +83,20 @@ public enum Network {
         return network;
     }
 
-    public NetworkParameters toGlobalNetParams() {
-        if (p2shHeader == -1) {
-            return new GlobalNetParams(addressHeader, privateKeyHeader);
+    @Nullable
+    public static Network deriveFrom(int addressHeader, int privateKeyHeader, int p2shHeader) {
+        Network network = null;
+        for (Network nw: values()) {
+            if (nw.addressHeader == addressHeader && nw.privateKeyHeader == privateKeyHeader && p2shHeader == nw.p2shHeader) {
+                network = nw;
+                break;
+            }
         }
-        return new GlobalNetParams(addressHeader, privateKeyHeader, p2shHeader);
+        return network;
+    }
+
+    public GlobalNetParams toGlobalNetParams() {
+        return new GlobalNetParams(this);
     }
 
     private void checkInRange(int value) throws ExceptionInInitializerError {
