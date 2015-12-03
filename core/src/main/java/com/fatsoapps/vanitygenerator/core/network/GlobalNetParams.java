@@ -24,16 +24,24 @@ public class GlobalNetParams extends NetworkParameters {
     private Network network;
 
     public GlobalNetParams(Network network) {
+        this.addressHeader = network.getAddressHeader();
+        this.dumpedPrivateKeyHeader = network.getPrivateKeyHeader();
+        try {
+            this.p2shHeader = network.getP2shHeader();
+            acceptableAddressCodes = new int[] {addressHeader, dumpedPrivateKeyHeader, p2shHeader};
+        } catch (Exception e) {
+            acceptableAddressCodes = new int[] {addressHeader, dumpedPrivateKeyHeader};
+        }
         this.network = network;
-        addressHeader = network.getAddressHeader();
-        dumpedPrivateKeyHeader = network.getPrivateKeyHeader();
-        p2shHeader = network.getP2shHeader();
-        acceptableAddressCodes = new int[] {addressHeader, dumpedPrivateKeyHeader, p2shHeader};
     }
 
     public GlobalNetParams(int addressHeader, int privateKeyHeader) {
-        this(addressHeader, privateKeyHeader, 0);
+        checkDecimal(addressHeader);
+        checkDecimal(privateKeyHeader);
+        this.addressHeader = addressHeader;
+        this.dumpedPrivateKeyHeader = privateKeyHeader;
         acceptableAddressCodes = new int[] {addressHeader, privateKeyHeader};
+        network = Network.deriveFrom(addressHeader, privateKeyHeader);
     }
 
     public GlobalNetParams(int addressHeader, int dumpedPrivateKeyHeader, int p2shHeader) {
@@ -44,7 +52,7 @@ public class GlobalNetParams extends NetworkParameters {
         this.dumpedPrivateKeyHeader = dumpedPrivateKeyHeader;
         this.p2shHeader = p2shHeader;
         acceptableAddressCodes = new int[] {this.addressHeader, p2shHeader};
-        network = Network.deriveFrom(addressHeader, dumpedPrivateKeyHeader);
+        network = Network.deriveFrom(addressHeader, dumpedPrivateKeyHeader, p2shHeader);
     }
 
     /**
