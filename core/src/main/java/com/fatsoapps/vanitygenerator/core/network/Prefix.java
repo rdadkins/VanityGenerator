@@ -193,6 +193,17 @@ public enum Prefix {
         }
     }
 
+    public static Prefix fromCharacter(char c) {
+        Prefix prefix = null;
+        for (Prefix p: values()) {
+            if (p.toString().charAt(0) == c) {
+                prefix = p;
+                break;
+            }
+        }
+        return prefix;
+    }
+
     private static void checkIfValid(int value) throws IllegalDecimalVersionException {
         if (value < 0 || value > 255) {
             throw new IllegalDecimalVersionException(value);
