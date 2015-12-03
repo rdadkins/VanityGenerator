@@ -3,6 +3,7 @@ package com.fatsoapps.vanitygenerator.core.query;
 import com.fatsoapps.vanitygenerator.core.network.GlobalNetParams;
 import org.bitcoinj.core.ECKey;
 
+import javax.annotation.Nullable;
 import java.util.regex.Pattern;
 
 /**
@@ -14,6 +15,7 @@ import java.util.regex.Pattern;
  * @see org.bitcoinj.core.ECKey
  * @see org.bitcoinj.core.Address
  * @see com.fatsoapps.vanitygenerator.core.query.Query
+ * @see com.fatsoapps.vanitygenerator.core.query.NetworkQuery
  */
 public class RegexQuery {
 
@@ -21,11 +23,8 @@ public class RegexQuery {
     protected boolean compressed;
     protected boolean findUnlimited;
 
-    /**
-     * Default constructor for Query.super() calls.
-     * @param findUnlimited - specifies whether to delete this Query from a collection when this Query is found.
-     */
-    protected RegexQuery(boolean findUnlimited) {
+    protected RegexQuery(boolean compressed, boolean findUnlimited) {
+        this.compressed = compressed;
         this.findUnlimited = findUnlimited;
     }
 
@@ -39,31 +38,36 @@ public class RegexQuery {
         this.findUnlimited = findUnlimited;
     }
 
-    public boolean isFindUnlimited() {
-        return findUnlimited;
+    public boolean matches(ECKey key, GlobalNetParams netParams) {
+        if (!compressed) {
+            key = key.decompress();
+        }
+        return pattern.matcher(key.toAddress(netParams).toString()).find();
     }
 
-    public void setFindUnlimited(boolean findUnlimited) {
-        this.findUnlimited = findUnlimited;
+    public Pattern getPattern() {
+        return pattern;
     }
 
     public boolean isCompressed() {
         return compressed;
     }
 
-    public void setCompresion(boolean compressed) {
-        this.compressed = compressed;
+    public boolean isFindUnlimited() {
+        return findUnlimited;
     }
 
-    public boolean matches(ECKey key, GlobalNetParams netParams) {
-        if (!compressed) {
-            key = key.decompress();
-        }
-        return matches(key.toAddress(netParams).toString());
+    public void setCompression(boolean compression) {
+        compressed = compression;
     }
 
-    public boolean matches(String input) {
-        return pattern.matcher(input).find();
+    public void setFindUnlimited(boolean findUnlimited) {
+        this.findUnlimited = findUnlimited;
+    }
+
+    @Nullable
+    public GlobalNetParams getNetwork() {
+        return null;
     }
 
     public int hashCode() {
