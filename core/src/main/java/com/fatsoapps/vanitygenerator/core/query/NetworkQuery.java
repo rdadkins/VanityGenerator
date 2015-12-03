@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  * a match on Bitcoin and wants a match on Litecoin but does not want to create separate search threads. Each NetworkQuery
  * contains its own Pattern and GlobalNetParams when it comes to matches().
  */
-public class NetworkQuery extends com.fatsoapps.vanitygenerator.core.nquery.RegexQuery {
+public class NetworkQuery extends RegexQuery {
 
     private Network network;
     private GlobalNetParams netParams;
