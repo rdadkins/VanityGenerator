@@ -29,14 +29,18 @@ public class NetworkQuery extends RegexQuery {
     }
 
     public void updateNetwork(Network network) {
-        this.network = network;
-        this.netParams = network.toGlobalNetParams();
+        updateNetParams(network.toGlobalNetParams());
+    }
+
+    public void updateNetParams(GlobalNetParams netParams) {
+        this.netParams = netParams;
+        this.network = netParams.getNetwork();
         updatePattern();
     }
 
     @Override
-    public GlobalNetParams getNetwork() {
-        return netParams;
+    public GlobalNetParams getNetworkParameters(GlobalNetParams netParams) {
+        return this.netParams;
     }
 
     @Override
@@ -50,7 +54,7 @@ public class NetworkQuery extends RegexQuery {
     }
 
     private void updatePattern() {
-        ArrayList<Prefix> prefixes = Prefix.getAddressPrefixes(network);
+        ArrayList<Prefix> prefixes = Prefix.getAddressPrefixes(netParams);
         StringBuilder prefixBuilder = new StringBuilder("(");
         for (Prefix prefix: prefixes) {
             prefixBuilder.append(prefix.toString());

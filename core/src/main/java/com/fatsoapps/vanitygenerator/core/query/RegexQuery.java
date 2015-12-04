@@ -42,7 +42,11 @@ public class RegexQuery {
         if (!compressed) {
             key = key.decompress();
         }
-        return pattern.matcher(key.toAddress(netParams).toString()).find();
+        return matches(key.toAddress(netParams).toString());
+    }
+
+    public boolean matches(String input) {
+        return pattern.matcher(input).find();
     }
 
     public Pattern getPattern() {
@@ -65,9 +69,14 @@ public class RegexQuery {
         this.findUnlimited = findUnlimited;
     }
 
-    @Nullable
-    public GlobalNetParams getNetwork() {
-        return null;
+    /**
+     * Get the NetworkParameters associated with this RegexQuery. If there is no NP defined, the NP passed in will be
+     * returned.
+     * @param netParams - the NetworkParameters to use if this RegexQuery doesn't define one.
+     * @return GlobalNetParams associated with this RegexQuery.
+     */
+    public GlobalNetParams getNetworkParameters(GlobalNetParams netParams) {
+        return netParams;
     }
 
     public int hashCode() {

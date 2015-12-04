@@ -3,7 +3,9 @@ package com.fatsoapps.vanitygenerator.core.query;
 import com.fatsoapps.vanitygenerator.core.network.GlobalNetParams;
 import com.fatsoapps.vanitygenerator.core.network.Prefix;
 import com.fatsoapps.vanitygenerator.core.network.Network;
+import com.fatsoapps.vanitygenerator.core.tools.Utils;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
@@ -39,8 +41,8 @@ public class Query extends RegexQuery {
     }
 
     @Override
-    public GlobalNetParams getNetwork() {
-        return null;
+    public GlobalNetParams getNetworkParameters(GlobalNetParams netParams) {
+        return netParams;
     }
 
     //TODO update this method to replace correct characters
@@ -61,6 +63,14 @@ public class Query extends RegexQuery {
             ArrayList<Prefix> prefixes = Prefix.getAddressPrefixes(network);
             updatePattern(prefixes.toArray(new Prefix[prefixes.size()]));
         }
+    }
+
+    public void updateNetwork(GlobalNetParams netParams) {
+        updateNetwork(netParams.getNetwork());
+    }
+
+    public BigInteger getOdds() {
+        return Utils.getOdds(query, begins, matchCase);
     }
 
     private void updatePattern(Prefix... prefixes) {
