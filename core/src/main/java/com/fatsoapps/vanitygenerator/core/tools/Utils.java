@@ -1,6 +1,9 @@
 package com.fatsoapps.vanitygenerator.core.tools;
 
+import com.fatsoapps.vanitygenerator.core.network.IllegalDecimalVersionException;
+
 import java.math.BigInteger;
+import java.util.regex.Pattern;
 
 /**
  * Utils for Vanity Generator Core
@@ -9,10 +12,7 @@ public class Utils {
 
     public static final int BASE = 58;
     public static final char[] NON_REPEAT_CHARS = new char[]{'i', 'L', 'o'};
-
-    public static void main(String[] args) {
-        System.out.println(getOdds("abc", false, false));
-    }
+    public static final Pattern BASE_58 = Pattern.compile("^[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]*$");
 
     /**
      * Calculates the estimated number of address needed to be generated to obtain an address that contains query.
@@ -56,6 +56,22 @@ public class Utils {
             }
         }
         return contains;
+    }
+
+    public static boolean isBase58(String input) {
+        return BASE_58.matcher(input).find();
+    }
+
+    /**
+     * Checks to see if the input integer is within the valid range of decimal's. The valid decimal range is within the
+     * closed range [0, 255].
+     * @param input - integer to check if it is in valid range.
+     * @throws IllegalDecimalVersionException if the input is out of range.
+     */
+    public static void checkIfValidDecimal(int input) {
+        if (input < 0 || input > 255) {
+            throw new IllegalDecimalVersionException(input);
+        }
     }
 
 }
