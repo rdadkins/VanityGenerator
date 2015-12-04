@@ -1,5 +1,8 @@
 package com.fatsoapps.vanitygenerator.core.network;
 
+import com.fatsoapps.vanitygenerator.core.tools.Utils;
+import org.bitcoinj.core.ECKey;
+
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 
@@ -20,15 +23,15 @@ public enum Network {
     private int privateKeyHeader;
     private int p2shHeader = -1;
 
-    Network(int addressHeader, int p2shHeader, int privateKeyHeader) throws ExceptionInInitializerError {
+    Network(int addressHeader, int p2shHeader, int privateKeyHeader) {
         this(addressHeader, privateKeyHeader);
-        checkInRange(p2shHeader);
+        Utils.checkIfValidDecimal(p2shHeader);
         this.p2shHeader = p2shHeader;
     }
 
-    Network(int addressHeader, int privateKeyHeader) throws ExceptionInInitializerError {
-        checkInRange(addressHeader);
-        checkInRange(privateKeyHeader);
+    Network(int addressHeader, int privateKeyHeader) {
+        Utils.checkIfValidDecimal(addressHeader);
+        Utils.checkIfValidDecimal(privateKeyHeader);
         this.addressHeader = addressHeader;
         this.privateKeyHeader = privateKeyHeader;
     }
@@ -97,12 +100,6 @@ public enum Network {
 
     public GlobalNetParams toGlobalNetParams() {
         return new GlobalNetParams(this);
-    }
-
-    private void checkInRange(int value) throws ExceptionInInitializerError {
-        if (value < 0 || value > 255) {
-            throw new ExceptionInInitializerError("Illegal decimal value: " + value + ". Value must be in range of [0, 255].");
-        }
     }
 
 }
