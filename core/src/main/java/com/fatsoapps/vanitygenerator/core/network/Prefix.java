@@ -1,5 +1,8 @@
 package com.fatsoapps.vanitygenerator.core.network;
 
+import com.fatsoapps.vanitygenerator.core.tools.Utils;
+
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 /**
@@ -78,10 +81,7 @@ public enum Prefix {
     Prefix(int... intDecimals) {
         versions = new short[intDecimals.length];
         for (int i = 0; i < intDecimals.length; i++) {
-            if (intDecimals[i] > 255 || intDecimals[i] < 0) {
-                throw new ExceptionInInitializerError("Illegal Decimal Version Number: " + intDecimals[i] + " within " +
-                    name() + ". Must be in range [0, 255].");
-            }
+            Utils.checkIfValidDecimal(intDecimals[i]);
             versions[i] = (short) intDecimals[i];
         }
     }
@@ -118,43 +118,37 @@ public enum Prefix {
     }
 
     /**
-     * Returns the first Prefix from a defined address header. This should never return null as long as there
-     * IllegalDecimalVersionException is thrown (addressHeader is in range of [0, 255]).
-     * @param addressHeader - decimal version to derive a Prefix from.
-     * @return the first Prefix that contains addressHeader.
-     * @throws IllegalDecimalVersionException if addressHeader is not in range of [0, 255].
+     * Gets a list of Prefix's from an integer value.
+     * @param value - a bounded value between [0, 255]
+     * @return - a list of Prefix's that match this value.
+     * @throws IllegalDecimalVersionException if value is out of range.
      */
-    public static Prefix getFirstPrefixFrom(int addressHeader) throws IllegalDecimalVersionException {
-        checkIfValid(addressHeader);
-        Prefix prefix = null;
-        for (Prefix mPrefix: values()) {
-            for (short decimal: mPrefix.versions) {
-                if (addressHeader == decimal) {
-                    prefix = mPrefix;
-                    break;
-                }
-            }
-        }
-        return prefix;
+    public static ArrayList<Prefix> getAddressPrefixes(int value) throws IllegalDecimalVersionException {
+        Utils.checkIfValidDecimal(value);
+        return getConfirmedAddressPrefixes(value);
     }
 
-    public static Prefix getFirstPrefixFrom(Network network) {
-        for (Prefix prefix: values()) {
-            for (short decimal: prefix.versions) {
-                if (network.getAddressHeader() == decimal) {
-                    return prefix;
-                }
-            }
-        }
-        return null;
-    }
-
-    public static ArrayList<Prefix> getAddressPrefixes(int value) throws Exception {
-        if (value >= 0 && value < 256) {
-            return getConfirmedAddressPrefixes(value);
+    /**
+     * Returns a list of Prefix's from a GlobalNetParams input. If the network does not exist within the GNP, the address
+     * header is used instead.
+     * @param netParams - GlobalNetParams to get prefixes from
+     * @return an ArrayList of Prefix's
+     */
+    public static ArrayList<Prefix> getAddressPrefixes(GlobalNetParams netParams) {
+        if (netParams.getNetwork() == null) {
+            return getConfirmedAddressPrefixes(netParams.getAddressHeader());
         } else {
-            throw new Exception("Decimal version is not valid: " + value);
+            return getAddressPrefixes(netParams.getNetwork());
         }
+    }
+
+    /**
+     * Returns a list of Prefix's that match a desired Network.
+     * @param network - the Network to get Prefix's for.
+     * @return a list of Prefix's matching the Network's addressHeader
+     */
+    public static ArrayList<Prefix> getAddressPrefixes(Network network) {
+        return getConfirmedAddressPrefixes(network.getAddressHeader());
     }
 
     /**
@@ -177,22 +171,11 @@ public enum Prefix {
     }
 
     /**
-     * Returns a list of Prefix's that match a desired Network.
-     * @param network - the Network to get Prefix's for.
-     * @return a list of Prefix's matching the Network's addressHeader
+     * Returns a Prefix from a character. If the character does not exist within the Prefix collection, null is returned.
+     * @param c - character to match within list.
+     * @return a Prefix that matches this character.
      */
-    public static ArrayList<Prefix> getAddressPrefixes(Network network) {
-        return getConfirmedAddressPrefixes(network.getAddressHeader());
-    }
-
-    public static ArrayList<Prefix> getAddressPrefixes(GlobalNetParams netParams) {
-        if (netParams.getNetwork() == null) {
-            return getConfirmedAddressPrefixes(netParams.getAddressHeader());
-        } else {
-            return getAddressPrefixes(netParams.getNetwork());
-        }
-    }
-
+    @Nullable
     public static Prefix fromCharacter(char c) {
         Prefix prefix = null;
         for (Prefix p: values()) {
@@ -202,12 +185,6 @@ public enum Prefix {
             }
         }
         return prefix;
-    }
-
-    private static void checkIfValid(int value) throws IllegalDecimalVersionException {
-        if (value < 0 || value > 255) {
-            throw new IllegalDecimalVersionException(value);
-        }
     }
 
 }
