@@ -1,7 +1,6 @@
 package com.fatsoapps.vanitygenerator.core.search;
 
 import com.fatsoapps.vanitygenerator.core.network.GlobalNetParams;
-import com.fatsoapps.vanitygenerator.core.query.Query;
 import com.fatsoapps.vanitygenerator.core.query.RegexQuery;
 import org.bitcoinj.core.ECKey;
 
@@ -20,21 +19,21 @@ public class Search implements Runnable {
 
     private BaseSearchListener listener;
     private GlobalNetParams netParams;
-    private ArrayList<RegexQuery> queries;
+    private final ArrayList<? extends RegexQuery> queries;
     private long updateAmount = 1000;
     private long generated;
     private long startTime;
 
-    public Search(BaseSearchListener listener, GlobalNetParams netParams, long updateAmount, RegexQuery... queries) {
-        this(listener, netParams, queries);
-        this.updateAmount = updateAmount;
-    }
-
-    public Search(BaseSearchListener listener, GlobalNetParams netParams, RegexQuery... queries) {
+    public <T extends RegexQuery> Search(BaseSearchListener listener, GlobalNetParams netParams, final T... queries) {
         this.listener = listener;
         this.netParams = netParams;
         this.queries = new ArrayList<RegexQuery>(Arrays.asList(queries));
         startTime = System.currentTimeMillis();
+    }
+
+    public Search setUpdateAmount(long amount) {
+        updateAmount = amount;
+        return this;
     }
 
     public void run() {
@@ -45,7 +44,7 @@ public class Search implements Runnable {
             for (RegexQuery query: queries) {
                 if (query.matches(key, netParams)) {
                     if (listener != null) {
-                        listener.onAddressFound(key, generated, getGeneratedPerSecond(), query.isCompressed());
+                        listener.onAddressFound(key, query.getNetworkParameters(netParams), generated, getGeneratedPerSecond(), query.isCompressed());
                     }
                     if (!query.isFindUnlimited()) {
                         queries.remove(query);
