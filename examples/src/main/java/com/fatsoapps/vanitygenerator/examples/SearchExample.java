@@ -22,13 +22,13 @@ public class SearchExample implements BaseSearchListener {
     }
 
     public void startExample() {
-        Query testQuery = new Query("test", false, false, true, netParams.getNetwork());
-        Query quickQuery = new Query("1", false, false, true, netParams.getNetwork());
+        Query testQuery = new Query.QueryBuilder("test").compressed(true).begins(false).matchCase(false).network(Network.BITCOIN).build();
+        Query quickQuery = new Query.QueryBuilder("").compressed(true).begins(true).matchCase(true).network(Network.BITCOIN).build();
         Search singleSearchThread = new Search(this, netParams, testQuery, quickQuery);
         singleSearchThread.run();
     }
 
-    public void onAddressFound(ECKey key, long amountGenerated, long speed, boolean compressed) {
+    public void onAddressFound(ECKey key, GlobalNetParams netParams, long amountGenerated, long speed, boolean compressed) {
         key = compressed ? key : key.decompress();
         System.out.printf("%d addresses generated to find %s%n", amountGenerated, key.toAddress(netParams));
     }
