@@ -1,7 +1,6 @@
 package com.fatsoapps.vanitygenerator.examples;
 
 import com.fatsoapps.vanitygenerator.core.network.GlobalNetParams;
-import com.fatsoapps.vanitygenerator.core.query.Query;
 import com.fatsoapps.vanitygenerator.core.query.RegexQuery;
 import com.fatsoapps.vanitygenerator.core.search.BaseSearchListener;
 import com.fatsoapps.vanitygenerator.core.search.Search;
@@ -24,14 +23,15 @@ public class RegexSearchExample implements BaseSearchListener {
     public void startExample() {
         Pattern pattern = Pattern.compile("^.*fun.*$"); // Contains fun
         Pattern secondPattern = Pattern.compile("^(?i)1(fun|test|hi|fatso|guy).*$"); // starts with any of these words where case doesn't matter
+        Pattern endsPattern = Pattern.compile("^.*YES$"); // ends with YES
         RegexQuery regexQuery = new RegexQuery(pattern, true, false);
         RegexQuery secondRegexQuery = new RegexQuery(secondPattern, true, false);
-        Query normalQuery = new Query("FUN", true, false, true, netParams.getNetwork());
-        Search search = new Search(this, netParams, regexQuery, normalQuery, secondRegexQuery);
+        RegexQuery thirdRegexQuery = new RegexQuery(endsPattern, true, false);
+        Search search = new Search(this, netParams, regexQuery, secondRegexQuery, thirdRegexQuery);
         new Thread(search).start();
     }
 
-    public void onAddressFound(ECKey key, long amountGenerated, long speedPerSecond, boolean isCompressed) {
+    public void onAddressFound(ECKey key, GlobalNetParams netParams, long amountGenerated, long speedPerSecond, boolean isCompressed) {
         if (!isCompressed) {
             key = key.decompress();
         }
