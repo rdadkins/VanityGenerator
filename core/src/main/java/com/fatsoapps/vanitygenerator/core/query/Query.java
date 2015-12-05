@@ -93,12 +93,18 @@ public class Query extends RegexQuery {
     public static class QueryBuilder {
 
         protected String query;
-        protected boolean compressed;
-        protected boolean findUnlimited;
-        protected boolean beginsWith;
-        protected boolean matchCase;
+        protected boolean compressed = true;
+        protected boolean findUnlimited = false;
+        protected boolean beginsWith = false;
+        protected boolean matchCase = true;
         protected Network network;
 
+        /**
+         * This is a builder class for Query. It is assumed that the query being passed in is already Base58 checked against.
+         * If it is not, there is a risk of wasting CPU time searching for something that will never exist.
+         * @see com.fatsoapps.vanitygenerator.core.tools.Utils (isBase58())
+         * @param query - the pre-qualified Base58 string.
+         */
         public QueryBuilder(String query) {
             this.query = query;
         }
