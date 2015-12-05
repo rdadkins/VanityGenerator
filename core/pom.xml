@@ -7,14 +7,14 @@
     <parent>
         <groupId>com.fatsoapps.vanitygenerator</groupId>
         <artifactId>vanitygenerator-parent</artifactId>
-        <version>0.1.0-beta</version>
+        <version>1.1.0-beta</version>
     </parent>
 
     <artifactId>core</artifactId>
-    <version>0.1.0-beta</version>
+    <version>1.1.0-beta</version>
 
     <name>Vanity Generator</name>
-    <description>A Java implementation of Bitcoin Vanity Address Generation</description>
+    <description>A Java implementation of VanityGen</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
