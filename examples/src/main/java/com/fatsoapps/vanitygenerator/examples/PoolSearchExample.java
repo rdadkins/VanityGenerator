@@ -26,8 +26,8 @@ public class PoolSearchExample implements BaseSearchListener {
     }
 
     public void startExample() {
-        Query easyQuery = new Query("FUN", true, false, true, netParams.getNetwork());
-        Query hardQuery = new Query("FUNN", true, true, false, netParams.getNetwork());
+        Query easyQuery = new Query.QueryBuilder("FUN").compressed(true).begins(false).matchCase(true).findUnlimited(false).build();
+        Query hardQuery = new Query.QueryBuilder("FUNN").compressed(true).begins(false).matchCase(false).findUnlimited(false).build();
         System.out.println("Odds: 1/" + easyQuery.getOdds());
         System.out.println("Odds: 1/" + hardQuery.getOdds());
         QueryPool pool = QueryPool.getInstance(netParams.getNetwork(), false);
@@ -42,7 +42,7 @@ public class PoolSearchExample implements BaseSearchListener {
         service.shutdown();
     }
 
-    public void onAddressFound(ECKey key, long amountGenerated, long speed, boolean isCompressed) {
+    public void onAddressFound(ECKey key, GlobalNetParams netParams, long amountGenerated, long speedPerSecond, boolean isCompressed) {
         if (!isCompressed) {
             key = key.decompress();
         }
