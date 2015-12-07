@@ -1,25 +1,14 @@
 package com.fatsoapps.vanitygenerator.core.query;
 
 import com.fatsoapps.vanitygenerator.core.network.GlobalNetParams;
-import com.fatsoapps.vanitygenerator.core.network.Prefix;
-import com.fatsoapps.vanitygenerator.core.network.Network;
 import com.fatsoapps.vanitygenerator.core.tools.Utils;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 /**
  * Query is an extension of RegexQuery which is meant to be an easier to use and more flexible Query type. Definitions
- * of each Query typically breaks down to a query string, position, case sensitivity, and an associated Prefix or
- * Network to search on. Query allows for each query input string to change, modification of where a query shows up in
- * a string, and case sensitivity.
- * @see com.fatsoapps.vanitygenerator.core.query.RegexQuery
- * @see com.fatsoapps.vanitygenerator.core.search.SearchPlacement
- * @see com.fatsoapps.vanitygenerator.core.search.SearchCase
- * @see com.fatsoapps.vanitygenerator.core.network.GlobalNetParams
- * @see com.fatsoapps.vanitygenerator.core.network.Prefix
- * @see com.fatsoapps.vanitygenerator.core.network.Network
+ * of each Query typically breaks down to a query string, position, and case sensitivity.
  */
 public class Query extends RegexQuery {
 
@@ -32,7 +21,7 @@ public class Query extends RegexQuery {
         this.begins = builder.beginsWith;
         this.matchCase = builder.matchCase;
         this.query = builder.query;
-        updateNetwork(builder.network);
+        updatePattern();
     }
 
     @Override
@@ -45,49 +34,28 @@ public class Query extends RegexQuery {
         return netParams;
     }
 
-    //TODO update this method to replace correct characters
-    private void setPlacement(boolean begins) {
+    public void updateQuery(String query) throws Base58FormatException {
+        Utils.checkBase58(query);
+        this.query = query;
+        updatePattern();
+    }
+
+    public void updatePlacement(boolean begins) {
         this.begins = begins;
-        if (!begins) {
-            pattern = Pattern.compile("^.*" + pattern.toString().replace("^",""));
-        } else {
-            int index = pattern.toString().indexOf(')');
-            pattern = Pattern.compile("^" + pattern.toString().substring(index + 1).replace("^",""));
-        }
+        updatePattern();
     }
 
-    public void updateNetwork(Network network) {
-        if (network == null) {
-            updatePattern();
-        } else {
-            ArrayList<Prefix> prefixes = Prefix.getAddressPrefixes(network);
-            updatePattern(prefixes.toArray(new Prefix[prefixes.size()]));
-        }
-    }
-
-    public void updateNetwork(GlobalNetParams netParams) {
-        updateNetwork(netParams.getNetwork());
+    public void updateMatchCase(boolean matchCase) {
+        this.matchCase = matchCase;
+        updatePattern();
     }
 
     public BigInteger getOdds() {
         return Utils.getOdds(query, begins, matchCase);
     }
 
-    private void updatePattern(Prefix... prefixes) {
-        if (begins && prefixes.length < 2) {
-            pattern = Pattern.compile("^" + (matchCase ? "" : "(?i)") + "." + query + ".*$");
-            return;
-        }
-        StringBuilder prefixBuilder = new StringBuilder("(");
-        for (Prefix prefix: prefixes) {
-            prefixBuilder.append(prefix.toString());
-            if (prefix != prefixes[prefixes.length - 1]) {
-                prefixBuilder.append("|");
-            }
-        }
-        prefixBuilder.append(")");
-        pattern = Pattern.compile("^" + prefixBuilder.toString() +
-                (matchCase ? "" : "(?i)") + ".*" + query + ".*$");
+    private void updatePattern() {
+        pattern = Pattern.compile("^" + (begins ? "." : ".*") + (matchCase ? "" : "(?i)") + query + ".*$");
     }
 
     public static class QueryBuilder {
@@ -97,43 +65,78 @@ public class Query extends RegexQuery {
         protected boolean findUnlimited = false;
         protected boolean beginsWith = false;
         protected boolean matchCase = true;
-        protected Network network;
 
         /**
          * This is a builder class for Query. It is assumed that the query being passed in is already Base58 checked against.
          * If it is not, there is a risk of wasting CPU time searching for something that will never exist.
-         * @see com.fatsoapps.vanitygenerator.core.tools.Utils (isBase58())
-         * @param query - the pre-qualified Base58 string.
+         * <br/>
+         * <b>NOTE: If you are planning on creating a begins Query, the first letter of the address is not needed
+         *      Example: user wants a Bitcoin address that begins with 1234 (with 1 being the Prefix of Bitcoin).
+         *      You just need to provide 234 and set the begins() to true.</b>
+         * @see com.fatsoapps.vanitygenerator.core.tools.Utils Utils.isBase58()
+         * <br/>
+         * @param query the pre-qualified Base58 string.
          */
-        public QueryBuilder(String query) {
+        public QueryBuilder(String query) throws Base58FormatException {
+            Utils.checkBase58(query);
             this.query = query;
         }
 
+        /**
+         * Set the compression of this query. When set to true, searching speeds will be at their peak performance while
+         * false requires more computation before checking for matches. Default is set to true.
+         * @param compressed the compression state.
+         * @return the instance of this QueryBuilder.
+         */
         public QueryBuilder compressed(boolean compressed) {
             this.compressed = compressed;
             return this;
         }
 
+        /**
+         * Determine whether this Query should be found an unlimited amount of times while searching.
+         * Default is set to false.
+         * @param findUnlimited tells whether this Query should be removed from a collection while searching once found.
+         * @return the instance of this QueryBuilder.
+         */
         public QueryBuilder findUnlimited(boolean findUnlimited) {
             this.findUnlimited = findUnlimited;
             return this;
         }
 
+        /**
+         * Indicates whether the matching should be restricted to the beginning of an address or throughout.
+         * <br/>Set to true means that the query should be found at the beginning of an address
+         * <br/>Example: query = test. Found = 1test...
+         * <br/>Set to false means that the query should be found anywhere in the address
+         * <br/>Example: query = test. Found = 1...test...
+         * <br/><b>When setting this to true, you do not need to consider the Prefix of the address as a letter. This means
+         * that if you want a begins query with 1234, the 1 does not need to be included if you are only interested in the
+         * 234 part. You just need to define 234 and set this to begins.</b>
+         * @param beginsWith determines the placement of the query when searching.
+         * @return the instance of this QueryBuilder.
+         */
         public QueryBuilder begins(boolean beginsWith) {
             this.beginsWith = beginsWith;
             return this;
         }
 
+        /**
+         * Determines the case sensitivity when searching.
+         * <br/>Set to true means that a query must match the case in which it was provided. ABC == ABC in this case.
+         * <br/>SEt to false means that a query can match any case. ABC == aBc in this case.
+         * @param matchCase determines the case sensitivity when searching.
+         * @return the instance of this QueryBuilder.
+         */
         public QueryBuilder matchCase(boolean matchCase) {
             this.matchCase = matchCase;
             return this;
         }
 
-        public QueryBuilder network(Network network) {
-            this.network = network;
-            return this;
-        }
-
+        /**
+         * Build this QueryBuilder into a Query
+         * @return the Query from this QueryBuilder.
+         */
         public Query build() {
             return new Query(this);
         }
