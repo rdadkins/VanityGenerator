@@ -1,11 +1,13 @@
 package com.fatsoapps.vanitygenerator.examples;
 
 import com.fatsoapps.vanitygenerator.core.network.GlobalNetParams;
+import com.fatsoapps.vanitygenerator.core.query.Base58FormatException;
 import com.fatsoapps.vanitygenerator.core.query.Query;
 import com.fatsoapps.vanitygenerator.core.query.QueryPool;
 import com.fatsoapps.vanitygenerator.core.search.BaseSearchListener;
 import com.fatsoapps.vanitygenerator.core.search.PoolSearch;
 import com.fatsoapps.vanitygenerator.core.network.Network;
+import com.fatsoapps.vanitygenerator.core.tools.Utils;
 import org.bitcoinj.core.ECKey;
 
 import java.util.Random;
@@ -21,11 +23,11 @@ public class PoolSearchExample implements BaseSearchListener {
 
     private static final GlobalNetParams netParams = GlobalNetParams.get(Network.BITCOIN);
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Base58FormatException {
         new PoolSearchExample().startExample();
     }
 
-    public void startExample() {
+    public void startExample() throws Base58FormatException {
         Query easyQuery = new Query.QueryBuilder("FUN").compressed(true).begins(false).matchCase(true).findUnlimited(false).build();
         Query hardQuery = new Query.QueryBuilder("FUNN").compressed(true).begins(false).matchCase(false).findUnlimited(false).build();
         System.out.println("Odds: 1/" + easyQuery.getOdds());
