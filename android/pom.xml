@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.fatsoapps.vanitygenerator</groupId>
         <artifactId>vanitygenerator-parent</artifactId>
-        <version>v1.2.0-beta</version>
+        <version>v1.2.1-beta</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

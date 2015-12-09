@@ -3,15 +3,26 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <parent>
         <groupId>com.fatsoapps.vanitygenerator</groupId>
         <artifactId>vanitygenerator-parent</artifactId>
-        <version>v1.2.0-beta</version>
+        <version>v1.2.1-beta</version>
     </parent>
 
     <artifactId>examples</artifactId>
-    <version>${project.parent.version}</version>
 
     <name>Examples of Vanity Generator</name>
     <description>Real life examples of how to use and implement various parts of Vanity Generator</description>

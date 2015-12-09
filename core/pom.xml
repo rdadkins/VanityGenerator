@@ -7,11 +7,10 @@
     <parent>
         <groupId>com.fatsoapps.vanitygenerator</groupId>
         <artifactId>vanitygenerator-parent</artifactId>
-        <version>v1.2.0-beta</version>
+        <version>v1.2.1-beta</version>
     </parent>
 
     <artifactId>core</artifactId>
-    <version>${project.parent.version}</version>
 
     <name>Vanity Generator</name>
     <description>A Java implementation of VanityGen</description>

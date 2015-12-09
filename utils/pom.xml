@@ -6,11 +6,10 @@
     <parent>
         <groupId>com.fatsoapps.vanitygenerator</groupId>
         <artifactId>vanitygenerator-parent</artifactId>
-        <version>v1.2.0-beta</version>
+        <version>v1.2.1-beta</version>
     </parent>
 
     <artifactId>utils</artifactId>
-    <version>${project.parent.version}</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
