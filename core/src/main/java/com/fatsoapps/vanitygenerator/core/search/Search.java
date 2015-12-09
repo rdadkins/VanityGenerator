@@ -17,9 +17,9 @@ import java.util.Arrays;
  */
 public class Search implements Runnable {
 
-    private BaseSearchListener listener;
+    protected BaseSearchListener listener;
     private GlobalNetParams netParams;
-    private final ArrayList<? extends RegexQuery> queries;
+    protected ArrayList<? extends RegexQuery> queries;
     private long updateAmount = 1000;
     private long generated;
     private long startTime;
