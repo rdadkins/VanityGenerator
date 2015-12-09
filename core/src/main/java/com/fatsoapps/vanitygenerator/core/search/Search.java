@@ -44,7 +44,7 @@ public class Search implements Runnable {
             for (RegexQuery query: queries) {
                 if (query.matches(key, netParams)) {
                     if (listener != null) {
-                        listener.onAddressFound(key, query.getNetworkParameters(netParams), generated, getGeneratedPerSecond(), query.isCompressed());
+                        listener.onAddressFound(key, query.getNetworkParameters(netParams), generated, getGeneratedPerSecond(), query);
                     }
                     if (!query.isFindUnlimited()) {
                         queries.remove(query);

@@ -47,7 +47,7 @@ public class PoolSearch implements Runnable {
             if ((query = pool.matches(key, netParams)) != null) {
                 long FINAL_GENERATED = generated;
                 if (listeners.size() > 0) {
-                    addressFound(key, query.getNetworkParameters(netParams), generated, getGeneratedPerSecond(), query.isCompressed());
+                    addressFound(key, query.getNetworkParameters(netParams), generated, getGeneratedPerSecond(), query);
                 }
                 if (!query.isFindUnlimited()) {
                     pool.removeQuery(query);
@@ -66,9 +66,9 @@ public class PoolSearch implements Runnable {
         listeners.clear();
     }
 
-    private synchronized void addressFound(ECKey key, GlobalNetParams netParams, long generated, long speed, boolean compressed) {
+    private synchronized void addressFound(ECKey key, GlobalNetParams netParams, long generated, long speed, RegexQuery query) {
         for (BaseSearchListener listener: listeners) {
-            listener.onAddressFound(key, netParams, generated, speed, compressed);
+            listener.onAddressFound(key, netParams, generated, speed, query);
         }
     }
 
