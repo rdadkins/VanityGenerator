@@ -13,6 +13,7 @@
         <module>utils</module>
         <module>core</module>
         <module>examples</module>
+        <module>android</module>
     </modules>
 
     <name>Vanity Generator Parent</name>
