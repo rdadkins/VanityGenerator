@@ -17,7 +17,7 @@ public class Query extends RegexQuery {
     private boolean matchCase;
 
     private Query(QueryBuilder builder) {
-        super(builder.compressed, builder.findUnlimited);
+        super(builder.compressed, builder.findUnlimited, builder.searchForP2SH);
         this.begins = builder.beginsWith;
         this.matchCase = builder.matchCase;
         this.query = builder.query;
@@ -65,6 +65,7 @@ public class Query extends RegexQuery {
         protected boolean findUnlimited = false;
         protected boolean beginsWith = false;
         protected boolean matchCase = true;
+        protected boolean searchForP2SH = false;
 
         /**
          * This is a builder class for Query. It is assumed that the query being passed in is already Base58 checked against.
@@ -124,12 +125,22 @@ public class Query extends RegexQuery {
         /**
          * Determines the case sensitivity when searching.
          * <br/>Set to true means that a query must match the case in which it was provided. ABC == ABC in this case.
-         * <br/>SEt to false means that a query can match any case. ABC == aBc in this case.
+         * <br/>Set to false means that a query can match any case. ABC == aBc in this case.
          * @param matchCase determines the case sensitivity when searching.
          * @return the instance of this QueryBuilder.
          */
         public QueryBuilder matchCase(boolean matchCase) {
             this.matchCase = matchCase;
+            return this;
+        }
+
+        /**
+         * Indicates if the address that needs to be searched for should be a P2SH (Pay to Script Hash) address.
+         * @param searchForP2SH determines whether to search for a P2SH address or not.
+         * @return the instance of this QueryBuilder.
+         */
+        public QueryBuilder searchForP2SH(boolean searchForP2SH) {
+            this.searchForP2SH = searchForP2SH;
             return this;
         }
 

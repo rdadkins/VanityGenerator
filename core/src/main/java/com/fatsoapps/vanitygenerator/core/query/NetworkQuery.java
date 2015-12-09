@@ -24,7 +24,7 @@ public class NetworkQuery extends RegexQuery {
     }
 
     public NetworkQuery(Pattern pattern, boolean compressed, boolean findUnlimited, Network network) {
-        super(pattern, compressed, findUnlimited);
+        super(pattern, compressed, findUnlimited, false);
         updateNetwork(network);
     }
 
