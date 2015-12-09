@@ -4,10 +4,12 @@ import com.fatsoapps.vanitygenerator.core.network.GlobalNetParams;
 import com.fatsoapps.vanitygenerator.core.query.Base58FormatException;
 import com.fatsoapps.vanitygenerator.core.query.Query;
 import com.fatsoapps.vanitygenerator.core.query.QueryPool;
+import com.fatsoapps.vanitygenerator.core.query.RegexQuery;
 import com.fatsoapps.vanitygenerator.core.search.BaseSearchListener;
 import com.fatsoapps.vanitygenerator.core.search.PoolSearch;
 import com.fatsoapps.vanitygenerator.core.network.Network;
 import com.fatsoapps.vanitygenerator.core.tools.Utils;
+import org.bitcoinj.core.Address;
 import org.bitcoinj.core.ECKey;
 
 import java.util.Random;
@@ -44,11 +46,15 @@ public class PoolSearchExample implements BaseSearchListener {
         service.shutdown();
     }
 
-    public void onAddressFound(ECKey key, GlobalNetParams netParams, long amountGenerated, long speedPerSecond, boolean isCompressed) {
-        if (!isCompressed) {
+    public void onAddressFound(ECKey key, GlobalNetParams netParams, long amountGenerated, long speedPerSecond, RegexQuery query) {
+        if (!query.isCompressed()) {
             key = key.decompress();
         }
-        System.out.printf("%s %s found after %d attempts.%n", isCompressed ? "[Compressed]" : "[Uncompressed]", key.toAddress(netParams), amountGenerated);
+        if (query.isP2SH()) {
+            System.out.println(Address.fromP2SHHash(netParams, key.getPubKeyHash()) + " found after " + amountGenerated + " attempts.");
+        } else {
+            System.out.println(key.toAddress(netParams) + " found after " + amountGenerated + " attempts.");
+        }
     }
 
     public void updateBurstGenerated(long totalGenerated, long burstGenerated, long speed) {

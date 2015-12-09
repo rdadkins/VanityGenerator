@@ -1,10 +1,12 @@
 package com.fatsoapps.vanitygenerator.examples;
 
 import com.fatsoapps.vanitygenerator.core.network.GlobalNetParams;
+import com.fatsoapps.vanitygenerator.core.query.Query;
 import com.fatsoapps.vanitygenerator.core.query.RegexQuery;
 import com.fatsoapps.vanitygenerator.core.search.BaseSearchListener;
 import com.fatsoapps.vanitygenerator.core.search.Search;
 import com.fatsoapps.vanitygenerator.core.network.Network;
+import org.bitcoinj.core.Address;
 import org.bitcoinj.core.ECKey;
 
 import java.util.regex.Pattern;
@@ -24,18 +26,22 @@ public class RegexSearchExample implements BaseSearchListener {
         Pattern pattern = Pattern.compile("^.*fun.*$"); // Contains fun
         Pattern secondPattern = Pattern.compile("^(?i)1(fun|test|hi|fatso|guy).*$"); // starts with any of these words where case doesn't matter
         Pattern endsPattern = Pattern.compile("^.*YES$"); // ends with YES
-        RegexQuery regexQuery = new RegexQuery(pattern, true, false);
-        RegexQuery secondRegexQuery = new RegexQuery(secondPattern, true, false);
-        RegexQuery thirdRegexQuery = new RegexQuery(endsPattern, true, false);
+        RegexQuery regexQuery = new RegexQuery(pattern, true, false, false);
+        RegexQuery secondRegexQuery = new RegexQuery(secondPattern, true, false, false);
+        RegexQuery thirdRegexQuery = new RegexQuery(endsPattern, true, false, true); // P2SH Address
         Search search = new Search(this, netParams, regexQuery, secondRegexQuery, thirdRegexQuery);
         new Thread(search).start();
     }
 
-    public void onAddressFound(ECKey key, GlobalNetParams netParams, long amountGenerated, long speedPerSecond, boolean isCompressed) {
-        if (!isCompressed) {
+    public void onAddressFound(ECKey key, GlobalNetParams netParams, long amountGenerated, long speedPerSecond, RegexQuery query) {
+        if (!query.isCompressed()) {
             key = key.decompress();
         }
-        System.out.println(key.toAddress(netParams) + " found after " + amountGenerated + " attempts.");
+        if (query.isP2SH()) {
+            System.out.println(Address.fromP2SHHash(netParams, key.getPubKeyHash()) + " found after " + amountGenerated + " attempts.");
+        } else {
+            System.out.println(key.toAddress(netParams) + " found after " + amountGenerated + " attempts.");
+        }
     }
 
     public void updateBurstGenerated(long totalGenerated, long burstGenerated, long speedPerSecond) {
