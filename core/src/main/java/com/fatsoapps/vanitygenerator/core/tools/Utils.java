@@ -1,6 +1,7 @@
 package com.fatsoapps.vanitygenerator.core.tools;
 
 import com.fatsoapps.vanitygenerator.core.network.IllegalDecimalVersionException;
+import com.fatsoapps.vanitygenerator.core.query.Base58FormatException;
 
 import java.math.BigInteger;
 import java.util.regex.Pattern;
@@ -60,6 +61,12 @@ public class Utils {
 
     public static boolean isBase58(String input) {
         return BASE_58.matcher(input).find();
+    }
+
+    public static void checkBase58(String input) throws Base58FormatException {
+        if (!isBase58(input)) {
+            throw new Base58FormatException(input);
+        }
     }
 
     /**
