@@ -1,6 +1,7 @@
 package com.fatsoapps.vanitygenerator.core.search;
 
 import com.fatsoapps.vanitygenerator.core.network.GlobalNetParams;
+import com.fatsoapps.vanitygenerator.core.query.RegexQuery;
 import org.bitcoinj.core.ECKey;
 
 /**
@@ -15,11 +16,11 @@ public interface BaseSearchListener {
      * @param netParams - the GlobalNetParams that was used to find this key.
      * @param amountGenerated - the amount of addresses generated to find this match.
      * @param speedPerSecond - the total amount of addresses generated per second across all threads.
-     * @param isCompressed - Whether the query was compressed or not.
+     * @param query - the query representing the found key.
      * @see com.fatsoapps.vanitygenerator.core.search.Search
      * @see com.fatsoapps.vanitygenerator.core.search.PoolSearch
      */
-    void onAddressFound(ECKey key, GlobalNetParams netParams, long amountGenerated, long speedPerSecond, boolean isCompressed);
+    void onAddressFound(ECKey key, GlobalNetParams netParams, long amountGenerated, long speedPerSecond, RegexQuery query);
 
     /**
      * Called when a Search thread has generated @burstGenerated amount of addresses. This is meant to let the user know
