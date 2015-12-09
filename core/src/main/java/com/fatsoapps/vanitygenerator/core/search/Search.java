@@ -61,6 +61,10 @@ public class Search implements Runnable {
         }
     }
 
+    public void stop() {
+        Thread.currentThread().interrupt();
+    }
+
     private long getGeneratedPerSecond() {
         try {
             return generated / ((System.currentTimeMillis() - startTime) / 1000);

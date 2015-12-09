@@ -66,6 +66,10 @@ public class PoolSearch implements Runnable {
         listeners.clear();
     }
 
+    public void stop() {
+        Thread.currentThread().interrupt();
+    }
+
     private synchronized void addressFound(ECKey key, GlobalNetParams netParams, long generated, long speed, RegexQuery query) {
         for (BaseSearchListener listener: listeners) {
             listener.onAddressFound(key, netParams, generated, speed, query);
