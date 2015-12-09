@@ -134,8 +134,6 @@ public class QueryPool {
             for (RegexQuery query: queries) {
                 if (query instanceof NetworkQuery) {
                     ((NetworkQuery) query).updateNetParams(netParams);
-                } else if (query instanceof Query) {
-                    ((Query) query).updateNetwork(netParams);
                 }
             }
         }
