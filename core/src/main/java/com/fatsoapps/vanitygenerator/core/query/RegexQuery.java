@@ -1,6 +1,7 @@
 package com.fatsoapps.vanitygenerator.core.query;
 
 import com.fatsoapps.vanitygenerator.core.network.GlobalNetParams;
+import com.fatsoapps.vanitygenerator.core.network.Network;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.WrongNetworkException;
@@ -25,6 +26,7 @@ public class RegexQuery {
     protected boolean compressed;
     protected boolean findUnlimited;
     protected boolean searchForP2SH;
+    protected GlobalNetParams netParams;
 
     protected RegexQuery(boolean compressed, boolean findUnlimited, boolean searchForP2SH) {
         this.compressed = compressed;
@@ -49,6 +51,9 @@ public class RegexQuery {
         }
         if (searchForP2SH) {
             return matches(Address.fromP2SHHash(netParams, key.getPubKeyHash()).toString());
+        }
+        if (this.netParams != null) {
+            return matches(key.toAddress(this.netParams).toString());
         }
         return matches(key.toAddress(netParams).toString());
     }
@@ -81,6 +86,14 @@ public class RegexQuery {
         this.findUnlimited = findUnlimited;
     }
 
+    public void updateNetwork(Network network) {
+        updateNetParams(network.toGlobalNetParams());
+    }
+
+    public void updateNetParams(GlobalNetParams netParams) {
+        this.netParams = netParams;
+    }
+
     /**
      * Get the NetworkParameters associated with this RegexQuery. If there is no NP defined, the NP passed in will be
      * returned.
@@ -88,7 +101,7 @@ public class RegexQuery {
      * @return GlobalNetParams associated with this RegexQuery.
      */
     public GlobalNetParams getNetworkParameters(GlobalNetParams netParams) {
-        return netParams;
+        return this.netParams == null ? netParams : this.netParams;
     }
 
     public int hashCode() {

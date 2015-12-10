@@ -3,7 +3,6 @@ package com.fatsoapps.vanitygenerator.core.query;
 import com.fatsoapps.vanitygenerator.core.network.GlobalNetParams;
 import com.fatsoapps.vanitygenerator.core.network.Network;
 import com.fatsoapps.vanitygenerator.core.tools.Utils;
-import org.bitcoinj.core.ECKey;
 
 import java.math.BigInteger;
 import java.util.regex.Pattern;
@@ -23,21 +22,8 @@ public class Query extends RegexQuery {
         this.begins = builder.beginsWith;
         this.matchCase = builder.matchCase;
         this.query = builder.query;
-        this.network = builder.network;
-        if (network != null) {
-            this.netParams = network.toGlobalNetParams();
-        }
+        this.netParams = builder.netParams;
         updatePattern();
-    }
-
-    @Override
-    public Pattern getPattern() {
-        return pattern;
-    }
-
-    @Override
-    public GlobalNetParams getNetworkParameters(GlobalNetParams netParams) {
-        return this.netParams == null ? netParams : this.netParams;
     }
 
     public void updateQuery(String query) throws Base58FormatException {
@@ -72,7 +58,7 @@ public class Query extends RegexQuery {
         private boolean beginsWith = false;
         private boolean matchCase = true;
         private boolean searchForP2SH = false;
-        private Network network;
+        private GlobalNetParams netParams;
 
         /**
          * This is a builder class for Query. It is assumed that the query being passed in is already Base58 checked against.
@@ -152,13 +138,13 @@ public class Query extends RegexQuery {
         }
 
         /**
-         * Set the targetNetwork for this Query. If there is no network provided, all matches will use the incoming
+         * Set the GlobalNetParams for this Query. If there is no network provided, all matches will use the incoming
          * GlobalNetParams.
-         * @param network the desired custom network for this Query.
+         * @param netParams the desired network for this query.
          * @return the instance of this QueryBuilder.
          */
-        public QueryBuilder targetNetwork(Network network) {
-            this.network = network;
+        public QueryBuilder targetNetwork(GlobalNetParams netParams) {
+            this.netParams = netParams;
             return this;
         }
 
