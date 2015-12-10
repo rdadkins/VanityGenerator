@@ -16,6 +16,9 @@ public class Utils {
     public static final Pattern BASE_58 = Pattern.compile("^[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]*$");
 
     /**
+     * This is a pseudo odds calculator. This returns a number based off of search case, search placement, and the
+     * length of the query. The estimates from this method will not be accurate since this doesn't dive in to the Base58
+     * pattern encoding scheme.
      * Calculates the estimated number of address needed to be generated to obtain an address that contains query.
      * Cases are as follows:
      *      Case    |   Placement   |   Outcome
