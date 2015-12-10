@@ -63,7 +63,6 @@ public class PoolSearch implements Runnable {
                 burstGenerated(generated, updateAmount, getGeneratedPerSecond());
             }
         }
-        listeners.clear();
     }
 
     public void stop() {
@@ -80,6 +79,7 @@ public class PoolSearch implements Runnable {
         for (BaseSearchListener listener: listeners) {
             listener.onTaskCompleted(generated, speed);
         }
+        listeners.clear();
     }
 
     private synchronized void burstGenerated(long generated, long burstGenerated, long speed) {
