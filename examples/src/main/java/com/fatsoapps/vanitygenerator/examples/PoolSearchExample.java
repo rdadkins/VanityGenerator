@@ -31,7 +31,13 @@ public class PoolSearchExample implements BaseSearchListener {
 
     public void startExample() throws Base58FormatException {
         Query easyQuery = new Query.QueryBuilder("FUN").compressed(true).begins(false).matchCase(true).findUnlimited(false).build();
-        Query hardQuery = new Query.QueryBuilder("FUNN").compressed(true).begins(false).matchCase(false).findUnlimited(false).build();
+        Query hardQuery = new Query.QueryBuilder("FUNN").
+                compressed(true).
+                begins(false).
+                matchCase(false).
+                findUnlimited(false).
+                searchForP2SH(true).
+                targetNetwork(GlobalNetParams.get(Network.LITECOIN)).build();
         System.out.println("Odds: 1/" + easyQuery.getOdds());
         System.out.println("Odds: 1/" + hardQuery.getOdds());
         QueryPool pool = QueryPool.getInstance(netParams.getNetwork(), false);
