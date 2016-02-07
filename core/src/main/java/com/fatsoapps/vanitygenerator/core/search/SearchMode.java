@@ -1,5 +1,11 @@
 package com.fatsoapps.vanitygenerator.core.search;
 
+/**
+ * Searching for multiple queries can have its advantages if it is incorporated right. Blindly searching for every
+ * single query in a collection will have a major drawback on speed and will ultimately slow down performance. This is
+ * meant to serve as an efficiency booster when searching and is ultimately up to the programmer to choose which fits
+ * best.
+ */
 public enum SearchMode {
 
     /**
