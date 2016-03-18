@@ -4,9 +4,7 @@ import com.fatsoapps.vanitygenerator.core.network.GlobalNetParams;
 import com.fatsoapps.vanitygenerator.core.network.Network;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.ECKey;
-import org.bitcoinj.core.WrongNetworkException;
 
-import javax.annotation.Nullable;
 import java.util.regex.Pattern;
 
 /**
@@ -104,16 +102,19 @@ public class RegexQuery {
         return this.netParams == null ? netParams : this.netParams;
     }
 
+    @Override
     public int hashCode() {
-        int hash = 17;
-        hash += 23 * (hash + (findUnlimited ? 17 : 7));
-        hash += 23 * (hash + (compressed ? 17 : 7));
-        hash += 23 * (hash + (pattern != null ? pattern.hashCode() : 7));
+        int hash = 11;
+        hash *= 23 + (findUnlimited ? 1 : 0);
+        hash *= 23 + (compressed ? 1 : 0);
+        hash *= 23 + (searchForP2SH ? 1 : 0);
+        hash *= 23 + (pattern != null ? pattern.hashCode() : 0);
         return hash;
     }
 
-    public boolean equals(RegexQuery other) {
-        return this.hashCode() == other.hashCode();
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof RegexQuery && this.hashCode() == other.hashCode();
     }
 
 }
