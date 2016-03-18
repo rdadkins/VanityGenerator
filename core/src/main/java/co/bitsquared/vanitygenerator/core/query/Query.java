@@ -1,5 +1,6 @@
 package co.bitsquared.vanitygenerator.core.query;
 
+import co.bitsquared.vanitygenerator.core.exceptions.Base58FormatException;
 import co.bitsquared.vanitygenerator.core.tools.Utils;
 import co.bitsquared.vanitygenerator.core.network.GlobalNetParams;
 
@@ -83,7 +84,7 @@ public class Query extends RegexQuery {
          * @param query the plain text query that must match Base58
          * @throws Base58FormatException if the query supplied does not match Base58
          */
-        public QueryBuilder(String query) throws Base58FormatException {
+        public QueryBuilder(String query) {
             Utils.checkBase58(query);
             this.query = query;
         }

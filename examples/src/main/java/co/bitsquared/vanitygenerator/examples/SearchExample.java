@@ -1,7 +1,7 @@
 package co.bitsquared.vanitygenerator.examples;
 
 import co.bitsquared.vanitygenerator.core.network.GlobalNetParams;
-import co.bitsquared.vanitygenerator.core.query.Base58FormatException;
+import co.bitsquared.vanitygenerator.core.exceptions.Base58FormatException;
 import co.bitsquared.vanitygenerator.core.query.Query;
 import co.bitsquared.vanitygenerator.core.query.RegexQuery;
 import co.bitsquared.vanitygenerator.core.search.BaseSearchListener;

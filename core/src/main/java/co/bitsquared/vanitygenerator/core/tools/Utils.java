@@ -1,7 +1,7 @@
 package co.bitsquared.vanitygenerator.core.tools;
 
 import co.bitsquared.vanitygenerator.core.network.IllegalDecimalVersionException;
-import co.bitsquared.vanitygenerator.core.query.Base58FormatException;
+import co.bitsquared.vanitygenerator.core.exceptions.Base58FormatException;
 
 import java.math.BigInteger;
 import java.util.regex.Pattern;
