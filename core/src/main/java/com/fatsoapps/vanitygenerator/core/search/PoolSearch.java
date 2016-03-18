@@ -10,25 +10,29 @@ import java.util.ArrayList;
 /**
  * <b>If this is implemented in Android, you need extend and set the appropriate thread priority.</b><br/>
  *
- * PoolSearch is a Runnable that takes a @BaseSearchListener and searches for Query's defined in a QueryPool. The user
+ * PoolSearch is a Runnable that takes a {@code BaseSearchListener} and searches for Query's defined in a {@code QueryPool}. The user
  * can define multiple PoolSearch's in separate threads to achieve a more multi-threaded approach of searching.
+ *
  * @see com.fatsoapps.vanitygenerator.core.search.Search for a single threaded instance of searching.
  */
 public class PoolSearch implements Runnable {
 
-    private final static ArrayList<BaseSearchListener> listeners = new ArrayList<BaseSearchListener>();
+    private static volatile ArrayList<BaseSearchListener> listeners = new ArrayList<BaseSearchListener>();
     private GlobalNetParams netParams;
     private QueryPool pool;
-    private long updateAmount = 1000;
+    private long updateAmount = 5000;
     private static volatile long startTime = 0;
     private static volatile long generated = 0;
+    private static boolean taskCompleted = true;
+    private static boolean burstDoneUpdating = true;
 
     /**
      * Creates a PoolSearch thread from a listener, an existing QueryPool instance, and an existing GlobalNetParams
-     * instance. Note: if the reference to this GNP changes, it WILL affect the way this thread searches for Query's.
+     * instance.
+     * Note: if the reference to this GNP changes, it WILL affect the way this thread searches for Query's.
      */
     public PoolSearch(BaseSearchListener listener, QueryPool pool, GlobalNetParams netParams) {
-        if (listener != null && !listeners.contains(listener)) {
+        if (!listeners.contains(listener)) {
             listeners.add(listener);
         }
         this.pool = pool;
@@ -55,7 +59,6 @@ public class PoolSearch implements Runnable {
                         if (listeners.size() > 0) {
                             taskCompleted(FINAL_GENERATED, getGeneratedPerSecond());
                         }
-                        startTime = 0;
                     }
                 }
             }
@@ -69,23 +72,44 @@ public class PoolSearch implements Runnable {
         Thread.currentThread().interrupt();
     }
 
-    private synchronized void addressFound(ECKey key, GlobalNetParams netParams, long generated, long speed, RegexQuery query) {
-        for (BaseSearchListener listener: listeners) {
-            listener.onAddressFound(key, netParams, generated, speed, query);
-        }
+    private synchronized void addressFound(final ECKey key, final GlobalNetParams netParams, final long generated, final long speed, final RegexQuery query) {
+        new Thread(new Runnable() {
+            public void run() {
+                for (BaseSearchListener listener: listeners) {
+                    listener.onAddressFound(key, netParams, generated, speed, query);
+                }
+            }
+        }).run();
     }
 
-    private synchronized void taskCompleted(long generated, long speed) {
-        for (BaseSearchListener listener: listeners) {
-            listener.onTaskCompleted(generated, speed);
-        }
+    private synchronized void taskCompleted(final long generated, final long speed) {
+        if (!taskCompleted) return;
+        taskCompleted = false;
+        new Thread(new Runnable() {
+            public void run() {
+                for (BaseSearchListener listener: listeners) {
+                    listener.onTaskCompleted(generated, speed);
+                }
+            }
+        }).run();
+        taskCompleted = true;
         listeners.clear();
+        startTime = 0;
+        PoolSearch.generated = 0;
     }
 
-    private synchronized void burstGenerated(long generated, long burstGenerated, long speed) {
-        for (BaseSearchListener listener: listeners) {
-            listener.updateBurstGenerated(generated, burstGenerated, speed);
-        }
+    private synchronized void burstGenerated(final long generated, final long burstGenerated, final long speed) {
+        if (!burstDoneUpdating) return;
+        burstDoneUpdating = false;
+        new Thread(new Runnable() {
+            public void run() {
+                for (final BaseSearchListener listener: listeners) {
+                    listener.updateBurstGenerated(generated, burstGenerated, speed);
+                }
+            }
+        }).run();
+        burstDoneUpdating = true;
+
     }
 
     private long getGeneratedPerSecond() {

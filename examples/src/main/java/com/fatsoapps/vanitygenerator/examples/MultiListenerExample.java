@@ -9,6 +9,8 @@ import com.fatsoapps.vanitygenerator.core.search.PoolSearch;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.ECKey;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
 /**
@@ -24,12 +26,15 @@ public class MultiListenerExample {
         QueryPool pool = QueryPool.getInstance(Network.BITCOIN, true);
         RegexQuery query = new RegexQuery(Pattern.compile(".*test.*"), true);
         pool.addQuery(query);
-        PoolSearch search = new PoolSearch(getListener(0), pool, GlobalNetParams.get(pool.getNetwork()));
-        search.registerListener(getListener(1));
-        new Thread(search).start();
+        ExecutorService service = Executors.newFixedThreadPool(4);
+        for (int i = 0; i < 4; i++) {
+            service.execute(new PoolSearch(getListener(i), pool , Network.BITCOIN.toGlobalNetParams()));
+        }
+        service.shutdown();
     }
 
     public BaseSearchListener getListener(final int id) {
+        System.out.println("Creating listener: " + id);
         return new BaseSearchListener() {
 
             public void onAddressFound(ECKey key, GlobalNetParams netParams, long amountGenerated, long speedPerSecond, RegexQuery query) {
