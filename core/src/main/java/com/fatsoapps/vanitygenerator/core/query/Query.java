@@ -1,7 +1,6 @@
 package com.fatsoapps.vanitygenerator.core.query;
 
 import com.fatsoapps.vanitygenerator.core.network.GlobalNetParams;
-import com.fatsoapps.vanitygenerator.core.network.Network;
 import com.fatsoapps.vanitygenerator.core.tools.Utils;
 
 import java.math.BigInteger;
@@ -17,7 +16,7 @@ public class Query extends RegexQuery {
     private boolean begins;
     private boolean matchCase;
 
-    private Query(QueryBuilder builder) {
+    protected Query(QueryBuilder builder) {
         super(builder.compressed, builder.findUnlimited, builder.searchForP2SH);
         this.begins = builder.beginsWith;
         this.matchCase = builder.matchCase;
@@ -40,6 +39,18 @@ public class Query extends RegexQuery {
     public void updateMatchCase(boolean matchCase) {
         this.matchCase = matchCase;
         updatePattern();
+    }
+
+    public String getPlainQuery() {
+        return query;
+    }
+
+    public boolean isBegins() {
+        return begins;
+    }
+
+    public boolean isMatchCase() {
+        return matchCase;
     }
 
     public BigInteger getOdds() {
@@ -69,7 +80,8 @@ public class Query extends RegexQuery {
          *      You just need to provide 234 and set the begins() to true.</b>
          * @see com.fatsoapps.vanitygenerator.core.tools.Utils Utils.isBase58()
          * <br/>
-         * @param query the pre-qualified Base58 string.
+         * @param query the plain text query that must match Base58
+         * @throws Base58FormatException if the query supplied does not match Base58
          */
         public QueryBuilder(String query) throws Base58FormatException {
             Utils.checkBase58(query);
