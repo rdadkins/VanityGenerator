@@ -17,7 +17,7 @@
     </build>
 
     <parent>
-        <groupId>com.fatsoapps.vanitygenerator</groupId>
+        <groupId>co.bitsquared.vanitygenerator</groupId>
         <artifactId>vanitygenerator-parent</artifactId>
         <version>v1.2.1-beta</version>
     </parent>
@@ -29,8 +29,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.fatsoapps.vanitygenerator</groupId>
-            <artifactId>core</artifactId>
+            <groupId>co.bitsquared.vanitygenerator</groupId>
+            <artifactId>VanityGenerator-core</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
     </dependencies>

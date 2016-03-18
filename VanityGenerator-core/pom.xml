@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.fatsoapps.vanitygenerator</groupId>
+        <groupId>co.bitsquared.vanitygenerator</groupId>
         <artifactId>vanitygenerator-parent</artifactId>
         <version>v1.2.1-beta</version>
     </parent>
 
-    <artifactId>core</artifactId>
+    <artifactId>VanityGenerator-core</artifactId>
 
     <name>Vanity Generator</name>
     <description>A Java implementation of VanityGen</description>

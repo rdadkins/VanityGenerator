@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>com.fatsoapps.vanitygenerator</groupId>
+        <groupId>co.bitsquared.vanitygenerator</groupId>
         <artifactId>vanitygenerator-parent</artifactId>
         <version>v1.2.1-beta</version>
     </parent>
@@ -15,8 +15,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.fatsoapps.vanitygenerator</groupId>
-            <artifactId>core</artifactId>
+            <groupId>co.bitsquared.vanitygenerator</groupId>
+            <artifactId>VanityGenerator-core</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>

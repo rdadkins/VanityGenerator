@@ -4,21 +4,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.fatsoapps.vanitygenerator</groupId>
+    <groupId>co.bitsquared.vanitygenerator</groupId>
     <artifactId>vanitygenerator-parent</artifactId>
     <version>v1.2.1-beta</version>
     <packaging>pom</packaging>
 
     <modules>
-        <module>utils</module>
-        <module>core</module>
+        <module>VanityGenerator-core</module>
         <module>examples</module>
         <module>android</module>
     </modules>
 
     <name>Vanity Generator Parent</name>
     <description>A wrapped config for all VanityGenerator modules</description>
-    <url>http://www.fatsoapps.com</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
