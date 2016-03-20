@@ -172,15 +172,27 @@ public class QueryPool {
     }
 
     private void updateListenersAdded(final RegexQuery query) {
-        listeners.forEach(listener -> {
-            runOnThread(() -> listener.onQueryAdded(query));
-        });
+        for (final QueryPoolListener listener: listeners) {
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    listener.onQueryAdded(query);
+                }
+            };
+            runOnThread(runnable);
+        }
     }
 
-    private void updateListenersRemoved(RegexQuery query) {
-        listeners.forEach(listener -> {
-            runOnThread(() -> listener.onQueryRemoved(query));
-        });
+    private void updateListenersRemoved(final RegexQuery query) {
+        for (final QueryPoolListener listener: listeners) {
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    listener.onQueryRemoved(query);
+                }
+            };
+            runOnThread(runnable);
+        }
     }
 
     private void runOnThread(Runnable runnable) {
