@@ -58,6 +58,15 @@ public class Query extends RegexQuery {
         return Utils.getOdds(query, begins, matchCase);
     }
 
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode();
+        hash *= 23 + (begins ? 1 : 0);
+        hash *= 23 + (matchCase ? 1 : 0);
+        hash *= 23 + query.hashCode();
+        return hash;
+    }
+
     private void updatePattern() {
         pattern = Pattern.compile("^" + (begins ? "." : ".*") + (matchCase ? "" : "(?i)") + query + ".*$");
     }
