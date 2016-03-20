@@ -60,11 +60,19 @@ public class Query extends RegexQuery {
 
     @Override
     public int hashCode() {
-        int hash = super.hashCode();
+        int hash = 17;
         hash *= 23 + (begins ? 1 : 0);
         hash *= 23 + (matchCase ? 1 : 0);
+        hash *= 23 + (compressed ? 1 : 0);
+        hash *= 23 + (findUnlimited ? 1 : 0);
+        hash *= 23 + (searchForP2SH ? 1 : 0);
         hash *= 23 + query.hashCode();
         return hash;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof Query && other.hashCode() == hashCode();
     }
 
     private void updatePattern() {
