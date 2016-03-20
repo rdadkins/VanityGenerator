@@ -4,7 +4,7 @@ import co.bitsquared.vanitygenerator.core.network.GlobalNetParams;
 import co.bitsquared.vanitygenerator.core.exceptions.Base58FormatException;
 import co.bitsquared.vanitygenerator.core.query.Query;
 import co.bitsquared.vanitygenerator.core.query.RegexQuery;
-import co.bitsquared.vanitygenerator.core.search.BaseSearchListener;
+import co.bitsquared.vanitygenerator.core.listeners.BaseSearchListener;
 import co.bitsquared.vanitygenerator.core.search.Search;
 import co.bitsquared.vanitygenerator.core.network.Network;
 import org.bitcoinj.core.Address;

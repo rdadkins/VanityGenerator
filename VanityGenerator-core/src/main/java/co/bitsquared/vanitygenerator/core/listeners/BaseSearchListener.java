@@ -1,7 +1,9 @@
-package co.bitsquared.vanitygenerator.core.search;
+package co.bitsquared.vanitygenerator.core.listeners;
 
 import co.bitsquared.vanitygenerator.core.network.GlobalNetParams;
 import co.bitsquared.vanitygenerator.core.query.RegexQuery;
+import co.bitsquared.vanitygenerator.core.search.PoolSearch;
+import co.bitsquared.vanitygenerator.core.search.Search;
 import org.bitcoinj.core.ECKey;
 
 /**

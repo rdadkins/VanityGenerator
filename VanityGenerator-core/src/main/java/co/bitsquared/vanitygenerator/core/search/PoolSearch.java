@@ -1,5 +1,6 @@
 package co.bitsquared.vanitygenerator.core.search;
 
+import co.bitsquared.vanitygenerator.core.listeners.BaseSearchListener;
 import co.bitsquared.vanitygenerator.core.network.GlobalNetParams;
 import co.bitsquared.vanitygenerator.core.query.QueryPool;
 import co.bitsquared.vanitygenerator.core.query.RegexQuery;
