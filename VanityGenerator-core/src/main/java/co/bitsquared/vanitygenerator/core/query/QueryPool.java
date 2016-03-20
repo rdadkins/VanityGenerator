@@ -1,5 +1,6 @@
 package co.bitsquared.vanitygenerator.core.query;
 
+import co.bitsquared.vanitygenerator.core.listeners.QueryPoolListener;
 import co.bitsquared.vanitygenerator.core.network.GlobalNetParams;
 import co.bitsquared.vanitygenerator.core.network.IllegalDecimalVersionException;
 import co.bitsquared.vanitygenerator.core.network.Network;
@@ -21,6 +22,7 @@ public class QueryPool {
     private Network network;
     private final ArrayList<RegexQuery> queries;
     private GlobalNetParams netParams;
+    private final ArrayList<QueryPoolListener> listeners = new ArrayList<QueryPoolListener>();
 
     private static QueryPool instance;
 
@@ -157,6 +159,32 @@ public class QueryPool {
             }
         }
         return null;
+    }
+
+    public void registerListener(QueryPoolListener listener) {
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
+    }
+
+    public void unregisterListener(QueryPoolListener listener) {
+        listeners.remove(listener);
+    }
+
+    private void updateListenersAdded(final RegexQuery query) {
+        listeners.forEach(listener -> {
+            runOnThread(() -> listener.onQueryAdded(query));
+        });
+    }
+
+    private void updateListenersRemoved(RegexQuery query) {
+        listeners.forEach(listener -> {
+            runOnThread(() -> listener.onQueryRemoved(query));
+        });
+    }
+
+    private void runOnThread(Runnable runnable) {
+        new Thread(runnable).run();
     }
 
 }
