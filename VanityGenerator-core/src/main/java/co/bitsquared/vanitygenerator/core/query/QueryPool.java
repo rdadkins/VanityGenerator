@@ -64,6 +64,7 @@ public class QueryPool {
     public synchronized <T extends RegexQuery> void addQuery(T query) {
         if (queries.contains(query)) return;
         queries.add(query);
+        updateListenersAdded(query);
     }
 
     public synchronized void removeQuery(int originalHashCode) {
@@ -79,6 +80,7 @@ public class QueryPool {
         if (query == null) return;
         synchronized (queries) {
             queries.remove(query);
+            updateListenersRemoved(query);
         }
     }
 
