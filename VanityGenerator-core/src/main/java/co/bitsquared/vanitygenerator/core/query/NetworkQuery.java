@@ -17,9 +17,6 @@ import java.util.regex.Pattern;
 @Deprecated /** Use Query / RegexQuery */
 public class NetworkQuery extends RegexQuery {
 
-    private Network network;
-    private GlobalNetParams netParams;
-
     public NetworkQuery(Pattern pattern, boolean compressed, Network network) {
         this(pattern, compressed, false, network);
     }
@@ -33,9 +30,9 @@ public class NetworkQuery extends RegexQuery {
         updateNetParams(network.toGlobalNetParams());
     }
 
+    @Override
     public void updateNetParams(GlobalNetParams netParams) {
         this.netParams = netParams;
-        this.network = netParams.getNetwork();
         updatePattern();
     }
 
