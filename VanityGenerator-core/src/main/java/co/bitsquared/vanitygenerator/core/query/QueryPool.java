@@ -62,16 +62,20 @@ public class QueryPool {
     }
 
     public synchronized <T extends RegexQuery> void addQuery(T query) {
-        if (queries.contains(query)) return;
-        queries.add(query);
-        updateListenersAdded(query);
+        synchronized (queries) {
+            if (queries.contains(query)) return;
+            queries.add(query);
+            updateListenersAdded(query);
+        }
     }
 
     public synchronized void removeQuery(int originalHashCode) {
-        for (RegexQuery query: queries) {
-            if (query.hashCode() == originalHashCode) {
-                removeQuery(query);
-                break;
+        synchronized (queries) {
+            for (RegexQuery query: queries) {
+                if (query.hashCode() == originalHashCode) {
+                    removeQuery(query);
+                    break;
+                }
             }
         }
     }
@@ -79,30 +83,35 @@ public class QueryPool {
     public synchronized <T extends RegexQuery> void removeQuery(T query) {
         if (query == null) return;
         synchronized (queries) {
-            queries.remove(query);
-            updateListenersRemoved(query);
+            if (queries.remove(query)) {
+                updateListenersRemoved(query);
+            }
         }
     }
 
     public synchronized <T extends RegexQuery> void updateQuery(T newQuery, int originalHashCode) {
         if (newQuery.hashCode() == originalHashCode || contains(newQuery)) return;
-        int index = -1;
-        for (int i = 0; i < queries.size(); i++) {
-            if (queries.get(i).hashCode() == originalHashCode) {
-                index = i;
-                break;
+        synchronized (queries) {
+            int index = -1;
+            for (int i = 0; i < queries.size(); i++) {
+                if (queries.get(i).hashCode() == originalHashCode) {
+                    index = i;
+                    break;
+                }
             }
+            if (index == -1) return;
+            queries.set(index, newQuery);
         }
-        if (index == -1) return;
-        queries.set(index, newQuery);
     }
 
     public <T extends RegexQuery> boolean contains(T query) {
         boolean contains = false;
-        for (RegexQuery q: queries) {
-            if (q.hashCode() == query.hashCode()) {
-                contains = true;
-                break;
+        synchronized (queries) {
+            for (RegexQuery q: queries) {
+                if (q.hashCode() == query.hashCode()) {
+                    contains = true;
+                    break;
+                }
             }
         }
         return contains;
@@ -138,7 +147,7 @@ public class QueryPool {
             this.netParams = netParams;
             for (RegexQuery query: queries) {
                 if (query instanceof NetworkQuery) {
-                    ((NetworkQuery) query).updateNetParams(netParams);
+                    query.updateNetParams(netParams);
                 }
             }
         }
@@ -164,13 +173,17 @@ public class QueryPool {
     }
 
     public void registerListener(QueryPoolListener listener) {
-        if (!listeners.contains(listener)) {
-            listeners.add(listener);
+        synchronized (listeners) {
+            if (!listeners.contains(listener)) {
+                listeners.add(listener);
+            }
         }
     }
 
     public void unregisterListener(QueryPoolListener listener) {
-        listeners.remove(listener);
+        synchronized (listeners) {
+            listeners.remove(listener);
+        }
     }
 
     private void updateListenersAdded(final RegexQuery query) {
