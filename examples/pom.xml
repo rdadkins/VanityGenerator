@@ -7,7 +7,7 @@
     <parent>
         <groupId>co.bitsquared.vanitygenerator</groupId>
         <artifactId>vanitygenerator-parent</artifactId>
-        <version>v1.2.1-beta</version>
+        <version>v1.0.0</version>
     </parent>
 
     <artifactId>examples</artifactId>
