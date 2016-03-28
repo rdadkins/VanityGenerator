@@ -18,14 +18,16 @@ import java.util.ArrayList;
  */
 public class PoolSearch implements Runnable {
 
-    private static volatile ArrayList<BaseSearchListener> listeners = new ArrayList<BaseSearchListener>();
+    private static final int DEFAULT_UPDATE_AMOUNT = 1000;
+    private static final ArrayList<BaseSearchListener> listeners = new ArrayList<BaseSearchListener>();
     private GlobalNetParams netParams;
     private QueryPool pool;
-    private long updateAmount = 5000;
-    private static volatile long startTime = 0;
-    private static volatile long generated = 0;
-    private static boolean taskCompleted = true;
-    private static boolean burstDoneUpdating = true;
+    private long updateAmount = DEFAULT_UPDATE_AMOUNT;
+    private volatile static long startTime = 0;
+    private volatile static long generated = 0;
+    private volatile static boolean taskCompleted = true;
+    private volatile static boolean burstDoneUpdating = true;
+    private volatile static boolean addressDoneUpdating = true;
 
     /**
      * Creates a PoolSearch thread from a listener, an existing QueryPool instance, and an existing GlobalNetParams
@@ -33,37 +35,33 @@ public class PoolSearch implements Runnable {
      * Note: if the reference to this GNP changes, it WILL affect the way this thread searches for Query's.
      */
     public PoolSearch(BaseSearchListener listener, QueryPool pool, GlobalNetParams netParams) {
-        if (!listeners.contains(listener)) {
-            listeners.add(listener);
-        }
+        registerListener(listener);
         this.pool = pool;
         this.netParams = netParams;
-        if (startTime == 0) {
-            startTime = System.currentTimeMillis();
-        }
     }
 
     public void run() {
+        synchronized (this) {
+            if (startTime == 0) {
+                startTime = System.currentTimeMillis() - 1000;
+            }
+        }
         ECKey key;
         RegexQuery query;
+        long localGen;
         while (!Thread.interrupted() && pool.containsQueries()) {
             key = new ECKey();
-            generated++;
+            localGen = ++generated;
             if ((query = pool.matches(key, netParams)) != null) {
-                long FINAL_GENERATED = generated;
-                if (listeners.size() > 0) {
-                    addressFound(key, query.getNetworkParameters(netParams), generated, getGeneratedPerSecond(), query);
-                }
+                addressFound(key, query.getNetworkParameters(netParams), generated, getGeneratedPerSecond(), query);
                 if (!query.isFindUnlimited()) {
                     pool.removeQuery(query);
                     if (!pool.containsQueries()) {
-                        if (listeners.size() > 0) {
-                            taskCompleted(FINAL_GENERATED, getGeneratedPerSecond());
-                        }
+                        taskCompleted(localGen, getGeneratedPerSecond());
                     }
                 }
             }
-            if (generated % updateAmount == 0 && listeners.size() > 0) {
+            if (localGen % updateAmount == 0) {
                 burstGenerated(generated, updateAmount, getGeneratedPerSecond());
             }
         }
@@ -73,66 +71,102 @@ public class PoolSearch implements Runnable {
         Thread.currentThread().interrupt();
     }
 
-    private synchronized void addressFound(final ECKey key, final GlobalNetParams netParams, final long generated, final long speed, final RegexQuery query) {
-        new Thread(new Runnable() {
-            public void run() {
-                for (BaseSearchListener listener: listeners) {
-                    listener.onAddressFound(key, netParams, generated, speed, query);
-                }
+    private void addressFound(final ECKey key, final GlobalNetParams netParams, final long generated, final long speed, final RegexQuery query) {
+        synchronized (this) {
+            if (!addressDoneUpdating) return;
+            addressDoneUpdating = false;
+        }
+        synchronized (listeners) {
+            for (final BaseSearchListener listener: listeners) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        listener.onAddressFound(key, netParams, generated, speed, query);
+                    }
+                }).start();
             }
-        }).run();
+        }
+        addressDoneUpdating = true;
     }
 
-    private synchronized void taskCompleted(final long generated, final long speed) {
-        if (!taskCompleted) return;
-        taskCompleted = false;
-        new Thread(new Runnable() {
-            public void run() {
-                for (BaseSearchListener listener: listeners) {
-                    listener.onTaskCompleted(generated, speed);
-                }
+    private void taskCompleted(final long generated, final long speed) {
+        synchronized (this) {
+            if (!taskCompleted) return;
+            taskCompleted = false;
+        }
+        synchronized (listeners) {
+            for (final BaseSearchListener listener: listeners) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        listener.onTaskCompleted(generated, speed);
+                    }
+                }).start();
             }
-        }).run();
+        }
         taskCompleted = true;
         listeners.clear();
         startTime = 0;
         PoolSearch.generated = 0;
     }
 
-    private synchronized void burstGenerated(final long generated, final long burstGenerated, final long speed) {
-        if (!burstDoneUpdating) return;
-        burstDoneUpdating = false;
-        new Thread(new Runnable() {
-            public void run() {
-                for (final BaseSearchListener listener: listeners) {
-                    listener.updateBurstGenerated(generated, burstGenerated, speed);
-                }
+    private void burstGenerated(final long generated, final long burstGenerated, final long speed) {
+        synchronized (this) {
+            if (!burstDoneUpdating) return;
+            burstDoneUpdating = false;
+        }
+        synchronized (listeners) {
+            for (final BaseSearchListener listener: listeners) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        listener.updateBurstGenerated(generated, burstGenerated, speed);
+                    }
+                }).start();
             }
-        }).run();
+        }
         burstDoneUpdating = true;
-
     }
 
     private long getGeneratedPerSecond() {
-        try {
-            return generated / ((System.currentTimeMillis() - startTime) / 1000);
-        } catch (ArithmeticException ex) {
-            return generated / 1000;
-        }
+        return generated / ((System.currentTimeMillis() - startTime) / 1000);
     }
 
+    /**
+     * Sets the updating amount when searching.
+     * @param updateAmount a positive number interval to update on. If the value is less than 0, the amount will be set to 1000.
+     * @return the current instance of PoolSearch
+     */
     public PoolSearch setUpdateAmount(long updateAmount) {
-        this.updateAmount = updateAmount;
+        synchronized (this) {
+            if (updateAmount <= 0) {
+                updateAmount = DEFAULT_UPDATE_AMOUNT;
+            }
+            this.updateAmount = updateAmount;
+        }
         return this;
     }
 
+    /**
+     * Registers a BaseSearchListener to this PoolSearch to listen for updates. Updates start as soon as the next update
+     * call is implemented.
+     */
     public PoolSearch registerListener(BaseSearchListener listener) {
-        listeners.add(listener);
+        synchronized (listeners) {
+            if (!listeners.contains(listener)) {
+                listeners.add(listener);
+            }
+        }
         return this;
     }
 
+    /**
+     * Unregisters a BaseSearchListener from this PoolSearch.
+     */
     public PoolSearch unregisterListener(BaseSearchListener listener) {
-        listeners.remove(listener);
+        synchronized (listeners) {
+            listeners.remove(listener);
+        }
         return this;
     }
 

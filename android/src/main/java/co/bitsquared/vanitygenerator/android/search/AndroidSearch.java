@@ -12,7 +12,7 @@ import co.bitsquared.vanitygenerator.core.search.Search;
  */
 public class AndroidSearch extends Search {
 
-    public <T extends RegexQuery> AndroidSearch(BaseSearchListener listener, GlobalNetParams netParams, T... queries) {
+    public AndroidSearch(BaseSearchListener listener, GlobalNetParams netParams, RegexQuery... queries) {
         super(listener, netParams, queries);
     }
 
@@ -21,4 +21,5 @@ public class AndroidSearch extends Search {
         Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
         super.run();
     }
+
 }
