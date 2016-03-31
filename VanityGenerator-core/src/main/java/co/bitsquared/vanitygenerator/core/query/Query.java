@@ -1,17 +1,22 @@
 package co.bitsquared.vanitygenerator.core.query;
 
 import co.bitsquared.vanitygenerator.core.exceptions.Base58FormatException;
-import co.bitsquared.vanitygenerator.core.tools.Utils;
 import co.bitsquared.vanitygenerator.core.network.GlobalNetParams;
+import co.bitsquared.vanitygenerator.core.tools.Utils;
 
+import javax.annotation.Nonnull;
 import java.math.BigInteger;
 import java.util.regex.Pattern;
 
 /**
- * Query is an extension of RegexQuery which is meant to be an easier to use and more flexible Query type. Definitions
- * of each Query typically breaks down to a query string, position, and case sensitivity.
+ * Query is an extension of {@code RegexQuery} which is meant to be an easier to use and more flexible Query type. Definitions
+ * of each Query typically breaks down to a query string, position, and case sensitivity. The only way to create a Query
+ * is through {@code QueryBuilder}.
+ *
+ * @see co.bitsquared.vanitygenerator.core.query.RegexQuery
+ * @see co.bitsquared.vanitygenerator.core.query.Query.QueryBuilder
  */
-public class Query extends RegexQuery {
+public class Query extends RegexQuery implements Comparable<Query> {
 
     private String query;
     private boolean begins;
@@ -77,6 +82,46 @@ public class Query extends RegexQuery {
 
     private void updatePattern() {
         pattern = Pattern.compile("^" + (begins ? "." : ".*") + (matchCase ? "" : "(?i)") + query + ".*$");
+    }
+
+    /**
+     * This method compares this Query with another Query and the sorting output should represent the easiest to hardest
+     * searching order on a collection of Query's (i.e., the smallest value is the easiest to find).
+     * Sorting depends on these properties in order:
+     *      A) Same length:
+     *          a) If both have are 'begins' Query's
+     *              I) If both are 'match case'
+     *                  i) If both are compressed
+     *                      * Return 0 since theses two are 'equal'
+     *                  ii) return 1 if this query is compressed, otherwise return -1.
+     *              II) return 1 if this query is match case, otherwise return -1.
+     *          b) return 1 if this query is begins, otherwise return -1.
+     *      B) Different length:
+     *          a) return the comparison of pseudo difficulty
+     */
+    @Override
+    public int compareTo(@Nonnull Query other) {
+        System.out.println(query + " " + getDifficulty() + " :: " + other.query + " " + other.getDifficulty());
+        if (hashCode() == other.hashCode()) return 0;
+        int lengthDifference = query.length() - other.query.length();
+        if (lengthDifference == 0) {
+            if (begins && other.begins) {
+                if (matchCase && other.matchCase) {
+                    if (compressed && other.compressed) {
+                        return 0;
+                    }
+                    return compressed ? 1 : -1;
+                }
+                return matchCase ? 1 : -1;
+            }
+            return begins ? 1 : -1;
+        } else {
+            return getDifficulty().compareTo(other.getDifficulty());
+        }
+    }
+
+    public BigInteger getDifficulty() {
+        return Utils.getOdds(query, begins, matchCase);
     }
 
     public static class QueryBuilder {
