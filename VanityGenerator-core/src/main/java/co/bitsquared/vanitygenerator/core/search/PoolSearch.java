@@ -13,8 +13,6 @@ import java.util.ArrayList;
  *
  * PoolSearch is a Runnable that takes a {@code BaseSearchListener} and searches for Query's defined in a {@code QueryPool}. The user
  * can define multiple PoolSearch's in separate threads to achieve a more multi-threaded approach of searching.
- *
- * @see Search for a single threaded instance of searching.
  */
 public class PoolSearch implements Runnable {
 

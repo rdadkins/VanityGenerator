@@ -14,8 +14,11 @@ import java.util.Arrays;
  * searching against.
  * @see BaseSearchListener for usage.
  * @see PoolSearch for a more multi-threaded approach.
- * <b>If this is implemented on Android, you need to extend this class and set the appropriate thread priority.</b>
+ * <b>If this is implemented on Android, you need to extend this class and set the appropriate thread priority.</b> * @deprecated Please use PoolSearch as Search is no longer supported.
+ * @deprecated Please use PoolSearch as Search is no longer supported.
+ * @since v1.2.0
  */
+@Deprecated
 public class Search implements Runnable {
 
     private static final int DEFAULT_UPDATE_AMOUNT = 1000;
