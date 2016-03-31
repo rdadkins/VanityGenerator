@@ -1,5 +1,6 @@
 package co.bitsquared.vanitygenerator.core.network;
 
+import co.bitsquared.vanitygenerator.core.exceptions.P2SHNotInitializedException;
 import co.bitsquared.vanitygenerator.core.tools.Utils;
 
 import javax.annotation.Nullable;
@@ -29,7 +30,6 @@ public enum Network {
         this.p2shHeader = p2shHeader;
     }
 
-    @Deprecated
     Network(int addressHeader, int privateKeyHeader) {
         Utils.checkIfValidDecimal(addressHeader);
         Utils.checkIfValidDecimal(privateKeyHeader);
@@ -45,9 +45,14 @@ public enum Network {
         return privateKeyHeader;
     }
 
-    public int getP2shHeader() throws Exception {
+    /**
+     * Returns the P2SH header for this network
+     * @throws P2SHNotInitializedException if this network does not define a P2SH Header
+     * @return the P2SH header if it exists.
+     */
+    public int getP2SHHeader() {
         if (p2shHeader == -1) {
-            throw new Exception(String.format("P2SH Header not initialized; %s does not define a P2SH Header.", name()));
+            throw new P2SHNotInitializedException(name());
         }
         return p2shHeader;
     }
