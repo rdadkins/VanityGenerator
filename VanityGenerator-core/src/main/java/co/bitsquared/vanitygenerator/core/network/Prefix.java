@@ -1,5 +1,6 @@
 package co.bitsquared.vanitygenerator.core.network;
 
+import co.bitsquared.vanitygenerator.core.exceptions.IllegalDecimalVersionException;
 import co.bitsquared.vanitygenerator.core.query.Query;
 import co.bitsquared.vanitygenerator.core.tools.Utils;
 

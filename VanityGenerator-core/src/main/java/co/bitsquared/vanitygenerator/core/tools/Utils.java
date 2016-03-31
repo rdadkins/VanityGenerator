@@ -1,6 +1,6 @@
 package co.bitsquared.vanitygenerator.core.tools;
 
-import co.bitsquared.vanitygenerator.core.network.IllegalDecimalVersionException;
+import co.bitsquared.vanitygenerator.core.exceptions.IllegalDecimalVersionException;
 import co.bitsquared.vanitygenerator.core.exceptions.Base58FormatException;
 
 import java.math.BigInteger;

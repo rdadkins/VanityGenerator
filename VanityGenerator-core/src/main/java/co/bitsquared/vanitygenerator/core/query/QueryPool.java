@@ -2,7 +2,7 @@ package co.bitsquared.vanitygenerator.core.query;
 
 import co.bitsquared.vanitygenerator.core.listeners.QueryPoolListener;
 import co.bitsquared.vanitygenerator.core.network.GlobalNetParams;
-import co.bitsquared.vanitygenerator.core.network.IllegalDecimalVersionException;
+import co.bitsquared.vanitygenerator.core.exceptions.IllegalDecimalVersionException;
 import co.bitsquared.vanitygenerator.core.network.Network;
 import co.bitsquared.vanitygenerator.core.search.PoolSearch;
 import org.bitcoinj.core.ECKey;

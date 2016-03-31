@@ -1,5 +1,6 @@
 package co.bitsquared.vanitygenerator.core.network;
 
+import co.bitsquared.vanitygenerator.core.exceptions.IllegalDecimalVersionException;
 import org.bitcoinj.core.NetworkParameters;
 
 import javax.annotation.Nullable;

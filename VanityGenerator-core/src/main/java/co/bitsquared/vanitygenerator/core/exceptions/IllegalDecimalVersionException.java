@@ -1,4 +1,4 @@
-package co.bitsquared.vanitygenerator.core.network;
+package co.bitsquared.vanitygenerator.core.exceptions;
 
 /**
  * IllegalDecimalVersionException is raised when an integer is being checked if it is in a valid range [0, 255] for
