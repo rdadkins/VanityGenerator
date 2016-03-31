@@ -16,6 +16,7 @@ public enum Network {
     LITECOIN(48, 5, 176),
     DASHCOIN(76, 16, 204),
     DOGECOIN(30, 22, 158),
+    @Deprecated
     MULTI(2, 0);
 
     private int addressHeader;
@@ -28,6 +29,7 @@ public enum Network {
         this.p2shHeader = p2shHeader;
     }
 
+    @Deprecated
     Network(int addressHeader, int privateKeyHeader) {
         Utils.checkIfValidDecimal(addressHeader);
         Utils.checkIfValidDecimal(privateKeyHeader);
