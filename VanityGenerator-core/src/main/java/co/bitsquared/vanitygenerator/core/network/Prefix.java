@@ -93,6 +93,7 @@ public enum Prefix {
      * @see Query
      * @return the string defined by this Prefix.
      */
+    @Override
     public String toString() {
         String value;
         if (this == ONE) {
@@ -125,7 +126,7 @@ public enum Prefix {
      * @return - a list of Prefix's that match this value.
      * @throws IllegalDecimalVersionException if value is out of range.
      */
-    public static ArrayList<Prefix> getAddressPrefixes(int value) throws IllegalDecimalVersionException {
+    public static ArrayList<Prefix> getAddressPrefixes(int value) {
         Utils.checkIfValidDecimal(value);
         return getConfirmedAddressPrefixes(value);
     }

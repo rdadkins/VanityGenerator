@@ -125,6 +125,16 @@ public class Query extends RegexQuery implements Comparable<RegexQuery> {
         }
     }
 
+    public static void main(String[] args) {
+        PriorityQueue<Query> queries = new PriorityQueue<Query>();
+        queries.add(new QueryBuilder("test").begins(true).matchCase(true).compressed(true).build());
+        queries.add(new QueryBuilder("yess").begins(true).matchCase(false).compressed(true).build());
+        queries.add(new QueryBuilder("bunc").begins(false).matchCase(false).compressed(true).build());
+        while (!queries.isEmpty()) {
+            System.out.println(queries.poll().query);
+        }
+    }
+
     public BigInteger getDifficulty() {
         return Utils.getOdds(query, begins, matchCase);
     }
