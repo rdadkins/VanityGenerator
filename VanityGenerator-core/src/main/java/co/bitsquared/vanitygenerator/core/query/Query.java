@@ -6,7 +6,6 @@ import co.bitsquared.vanitygenerator.core.tools.Utils;
 
 import javax.annotation.Nonnull;
 import java.math.BigInteger;
-import java.util.PriorityQueue;
 import java.util.regex.Pattern;
 
 /**
@@ -122,16 +121,6 @@ public class Query extends RegexQuery implements Comparable<RegexQuery> {
             return compressed ? -1 : 1;
         } else {
             return getDifficulty().compareTo(otherQuery.getDifficulty());
-        }
-    }
-
-    public static void main(String[] args) {
-        PriorityQueue<Query> queries = new PriorityQueue<Query>();
-        queries.add(new QueryBuilder("test").begins(true).matchCase(true).compressed(true).build());
-        queries.add(new QueryBuilder("yess").begins(true).matchCase(false).compressed(true).build());
-        queries.add(new QueryBuilder("bunc").begins(false).matchCase(false).compressed(true).build());
-        while (!queries.isEmpty()) {
-            System.out.println(queries.poll().query);
         }
     }
 
