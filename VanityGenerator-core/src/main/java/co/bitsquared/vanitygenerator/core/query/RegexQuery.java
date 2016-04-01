@@ -5,6 +5,7 @@ import co.bitsquared.vanitygenerator.core.network.Network;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.ECKey;
 
+import javax.annotation.Nonnull;
 import java.util.regex.Pattern;
 
 /**
@@ -18,7 +19,7 @@ import java.util.regex.Pattern;
  * @see Query
  * @see NetworkQuery
  */
-public class RegexQuery {
+public class RegexQuery implements Comparable<RegexQuery> {
 
     protected Pattern pattern;
     protected boolean compressed;
@@ -115,6 +116,22 @@ public class RegexQuery {
     @Override
     public boolean equals(Object other) {
         return other instanceof RegexQuery && this.hashCode() == other.hashCode();
+    }
+
+    /**
+     * Since it is hard to determine what actual query is held within a RegexQuery, we rely on two things:
+     * Compressed -> Pattern
+     * Compressed:
+     *      Match: Return the patterns string comparison
+     *      Don't Match: if this compression is true, return -1 since searching for a compressed addresses is faster. Otherwise return 1.
+     */
+    @Override
+    public int compareTo(@Nonnull RegexQuery other) {
+        if (hashCode() == other.hashCode()) return 0;
+        if (compressed == other.compressed) {
+            return pattern.toString().compareTo(other.toString());
+        }
+        return compressed ? -1 : 1;
     }
 
 }
