@@ -28,7 +28,7 @@ public class GlobalNetParams extends NetworkParameters {
         this.addressHeader = network.getAddressHeader();
         this.dumpedPrivateKeyHeader = network.getPrivateKeyHeader();
         try {
-            this.p2shHeader = network.getP2shHeader();
+            this.p2shHeader = network.getP2SHHeader();
             acceptableAddressCodes = new int[] {addressHeader, dumpedPrivateKeyHeader, p2shHeader};
         } catch (Exception e) {
             acceptableAddressCodes = new int[] {addressHeader, dumpedPrivateKeyHeader};

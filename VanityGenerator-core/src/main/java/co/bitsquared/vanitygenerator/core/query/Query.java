@@ -6,6 +6,7 @@ import co.bitsquared.vanitygenerator.core.tools.Utils;
 
 import javax.annotation.Nonnull;
 import java.math.BigInteger;
+import java.util.PriorityQueue;
 import java.util.regex.Pattern;
 
 /**
@@ -16,7 +17,7 @@ import java.util.regex.Pattern;
  * @see co.bitsquared.vanitygenerator.core.query.RegexQuery
  * @see co.bitsquared.vanitygenerator.core.query.Query.QueryBuilder
  */
-public class Query extends RegexQuery implements Comparable<Query> {
+public class Query extends RegexQuery implements Comparable<RegexQuery> {
 
     private String query;
     private boolean begins;
@@ -88,35 +89,39 @@ public class Query extends RegexQuery implements Comparable<Query> {
      * This method compares this Query with another Query and the sorting output should represent the easiest to hardest
      * searching order on a collection of Query's (i.e., the smallest value is the easiest to find).
      * Sorting depends on these properties in order:
-     *      A) Same length:
-     *          a) If both have are 'begins' Query's
-     *              I) If both are 'match case'
-     *                  i) If both are compressed
-     *                      * Return 0 since theses two are 'equal'
-     *                  ii) return 1 if this query is compressed, otherwise return -1.
-     *              II) return 1 if this query is match case, otherwise return -1.
-     *          b) return 1 if this query is begins, otherwise return -1.
-     *      B) Different length:
-     *          a) return the comparison of pseudo difficulty
+     * Query Length -> Compression -> Begins -> MatchCase
+     * Query Length:
+     *      Match: Check Compression
+     *      Don't match: return difficulty comparison
+     * Compression:
+     *      Match: Check Begins
+     *      Don't match: if this compression is true, return -1 since searching for compressed addresses is faster. Otherwise return 1.
+     * Begins:
+     *      Match: Check MatchCase
+     *      Don't match: if this query is begins, return 1 since it is harder to find a query that begins with an expression. Otherwise return -1.
+     * MatchCase:
+     *      Match: return 0 since these Query's are identical in the greater sense.
+     *      Don't match: if this query is match case, return 1 since it is harder to find a query matching exact letter casing. Otherwise return -1.
      */
     @Override
-    public int compareTo(@Nonnull Query other) {
-        System.out.println(query + " " + getDifficulty() + " :: " + other.query + " " + other.getDifficulty());
-        if (hashCode() == other.hashCode()) return 0;
-        int lengthDifference = query.length() - other.query.length();
+    public int compareTo(@Nonnull RegexQuery other) {
+        if (!(other instanceof Query)) return 0;
+        Query otherQuery = (Query) other;
+        if (hashCode() == otherQuery.hashCode()) return 0;
+        int lengthDifference = query.length() - otherQuery.query.length();
         if (lengthDifference == 0) {
-            if (begins && other.begins) {
-                if (matchCase && other.matchCase) {
-                    if (compressed && other.compressed) {
+            if (compressed == otherQuery.compressed) {
+                if (begins == otherQuery.begins) {
+                    if (matchCase == otherQuery.matchCase) {
                         return 0;
                     }
-                    return compressed ? 1 : -1;
+                    return matchCase ? 1 : -1;
                 }
-                return matchCase ? 1 : -1;
+                return begins ? 1 : -1;
             }
-            return begins ? 1 : -1;
+            return compressed ? -1 : 1;
         } else {
-            return getDifficulty().compareTo(other.getDifficulty());
+            return getDifficulty().compareTo(otherQuery.getDifficulty());
         }
     }
 
