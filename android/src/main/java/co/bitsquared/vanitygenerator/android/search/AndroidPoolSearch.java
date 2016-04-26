@@ -12,6 +12,14 @@ import co.bitsquared.vanitygenerator.core.search.PoolSearch;
  */
 public class AndroidPoolSearch extends PoolSearch {
 
+    private AndroidPoolSearch (AndroidPoolSearchBuilder builder) {
+        super(builder);
+    }
+
+    /**
+     * @deprecated since v1.3.0 - use AndroidPoolSearchBuilder
+     */
+    @Deprecated
     public AndroidPoolSearch(BaseSearchListener listener, QueryPool pool, GlobalNetParams netParams) {
         super(listener, pool, netParams);
     }
@@ -20,6 +28,25 @@ public class AndroidPoolSearch extends PoolSearch {
     public void run() {
         Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
         super.run();
+    }
+
+    public static class AndroidPoolSearchBuilder extends PoolSearchBuilder {
+
+        /**
+         * Create an AndroidPoolSearchBuilder from a QueryPool.
+         *
+         * @param pool a nonnull QueryPool.
+         * @throws NullPointerException if pool is null.
+         */
+        public AndroidPoolSearchBuilder(QueryPool pool) {
+            super(pool);
+        }
+
+        @Override
+        public AndroidPoolSearch build() {
+            return new AndroidPoolSearch(this);
+        }
+
     }
 
 }
