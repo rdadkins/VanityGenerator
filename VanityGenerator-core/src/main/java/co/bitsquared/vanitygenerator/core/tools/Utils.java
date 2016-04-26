@@ -84,4 +84,13 @@ public class Utils {
         }
     }
 
+    /**
+     * Checks if an object is null. Throws NullPointerException if object is null
+     */
+    public static void checkNotNull(Object object, String message) {
+        if (object == null) {
+            throw new NullPointerException(message);
+        }
+    }
+
 }
