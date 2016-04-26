@@ -1,14 +1,15 @@
 package co.bitsquared.vanitygenerator.core.query;
 
+import co.bitsquared.vanitygenerator.core.exceptions.IllegalDecimalVersionException;
 import co.bitsquared.vanitygenerator.core.listeners.QueryPoolListener;
 import co.bitsquared.vanitygenerator.core.network.GlobalNetParams;
-import co.bitsquared.vanitygenerator.core.exceptions.IllegalDecimalVersionException;
 import co.bitsquared.vanitygenerator.core.network.Network;
 import co.bitsquared.vanitygenerator.core.search.PoolSearch;
 import org.bitcoinj.core.ECKey;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 /**
  * QueryPool is collection of Query's defined by the user that can be accessed anywhere by calling getInstance().
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 public class QueryPool {
 
     private Network network;
-    private final ArrayList<RegexQuery> queries;
+    private final TreeSet<RegexQuery> queries;
     private GlobalNetParams netParams;
     private final ArrayList<QueryPoolListener> listeners = new ArrayList<QueryPoolListener>();
 
@@ -51,13 +52,13 @@ public class QueryPool {
     }
 
     private QueryPool(Network network) {
-        queries = new ArrayList<RegexQuery>();
+        queries = new TreeSet<RegexQuery>();
         netParams = new GlobalNetParams(network);
         this.network = network;
     }
 
     private QueryPool(int publicKeyHeader, int p2shHeader, int privateKeyHeader) throws IllegalDecimalVersionException {
-        queries = new ArrayList<RegexQuery>();
+        queries = new TreeSet<RegexQuery>();
         netParams = new GlobalNetParams(publicKeyHeader, p2shHeader, privateKeyHeader);
     }
 
@@ -69,18 +70,28 @@ public class QueryPool {
         }
     }
 
+    /**
+     * Removes a query based off of its original hashcode.
+     * @since v1.0.0
+     */
     public synchronized void removeQuery(int originalHashCode) {
         synchronized (queries) {
+            RegexQuery queryToBeRemoved = null;
             for (RegexQuery query: queries) {
                 if (query.hashCode() == originalHashCode) {
-                    removeQuery(query);
+                    queryToBeRemoved = query;
                     break;
                 }
             }
+            removeQuery(queryToBeRemoved);
         }
     }
 
-    public synchronized <T extends RegexQuery> void removeQuery(T query) {
+    /**
+     * Removes a query from the pool.
+     * @since v1.0.0
+     */
+    public synchronized void removeQuery(RegexQuery query) {
         if (query == null) return;
         synchronized (queries) {
             if (queries.remove(query)) {
@@ -89,51 +100,68 @@ public class QueryPool {
         }
     }
 
-    public synchronized <T extends RegexQuery> void updateQuery(T newQuery, int originalHashCode) {
-        if (newQuery.hashCode() == originalHashCode || contains(newQuery)) return;
+    /**
+     * Updates an old query based on the original hashcode.
+     * @since v1.0.0
+     */
+    public synchronized void updateQuery(RegexQuery newQuery, int originalHashCode) {
+        if (newQuery == null || newQuery.hashCode() == originalHashCode || contains(newQuery)) return;
         synchronized (queries) {
-            int index = -1;
-            for (int i = 0; i < queries.size(); i++) {
-                if (queries.get(i).hashCode() == originalHashCode) {
-                    index = i;
+            RegexQuery queryToRemove = null;
+            for (RegexQuery query: queries) {
+                if (query.hashCode() == originalHashCode) {
+                    queryToRemove = query;
                     break;
                 }
             }
-            if (index == -1) return;
-            queries.set(index, newQuery);
+            if (queryToRemove == null) return;
+            queries.remove(queryToRemove);
+            queries.add(newQuery);
         }
     }
 
-    public <T extends RegexQuery> boolean contains(T query) {
-        boolean contains = false;
+    /**
+     * Checks to see if the pool contains this query.
+     * @since v1.0.0
+     */
+    public boolean contains(RegexQuery query) {
         synchronized (queries) {
-            for (RegexQuery q: queries) {
-                if (q.hashCode() == query.hashCode()) {
-                    contains = true;
-                    break;
-                }
-            }
+            return query != null && queries.contains(query);
         }
-        return contains;
     }
 
+    /**
+     * Returns the amount of queries remaining in the pool.
+     * @since v1.0.0
+     */
     public int getAmountOfQueries() {
-        return queries.size();
+        synchronized (queries) {
+            return queries.size();
+        }
     }
 
+    /**
+     * Determines if there are queries present in the pool.
+     * @since v1.0.0
+     */
     public boolean containsQueries() {
-        return queries.size() > 0;
+        return getAmountOfQueries() > 0;
     }
 
     /**
      * When a user decides to change the Network they are searching on, all of the queries need to be updated with
      * the new updated Network
      * @param network - Network that is going to replace the old Network.
+     * @since v1.0.0
      */
     public void updateNetwork(Network network) {
         if (this.network != network) {
             this.network = network;
-            updateNetwork(new GlobalNetParams(network));
+            synchronized (queries) {
+                for (RegexQuery query: queries) {
+                    query.updateNetwork(network);
+                }
+            }
         }
     }
 
@@ -141,26 +169,35 @@ public class QueryPool {
      * When a user decides to change the GlobalNetParams they are searching on, all of the queries need to be updated
      * with the new GNP. This method is used over updateNetwork(Network) when the networks module is excluded.
      * @param netParams - GNP that is going to replace the old GNP.
+     * @deprecated since v1.3.0. Just use updateNetwork(Network)
      */
     public void updateNetwork(GlobalNetParams netParams) {
         if (this.netParams.getAddressHeader() != netParams.getAddressHeader()) {
             this.netParams = netParams;
-            for (RegexQuery query: queries) {
-                if (query instanceof NetworkQuery) {
-                    query.updateNetParams(netParams);
+            synchronized (queries) {
+                for (RegexQuery query: queries) {
+                    if (query instanceof NetworkQuery) {
+                        query.updateNetParams(netParams);
+                    }
                 }
             }
         }
     }
 
-    public ArrayList<? extends RegexQuery> getQueries() {
-        return queries;
-    }
-
+    /**
+     * Returns the specified network to search on.
+     * @since v1.0.0
+     * @deprecated since v1.3.0
+     */
+    @Deprecated
     public Network getNetwork() {
         return network;
     }
 
+    /**
+     * Determines if a an ECKey matches any query in the pool. If so, the matched query is returned. Otherwise, null is returned.
+     * @since v1.0.0
+     */
     public RegexQuery matches(ECKey key, GlobalNetParams netParams) {
         synchronized (queries) {
             for (RegexQuery query: queries) {
@@ -172,9 +209,35 @@ public class QueryPool {
         return null;
     }
 
+    /**
+     * Returns the easiest / lowest ranking query if there is one. Otherwise, returns null.
+     * @since v1.3.0
+     */
+    public RegexQuery getEasiestQuery() {
+        synchronized (queries) {
+            if (queries.isEmpty()) {
+                return null;
+            }
+            return queries.first();
+        }
+    }
+
+    /**
+     * Returns the hardest / highest ranking query if there is one. Otherwise, returns null.
+     * @since v1.3.0
+     */
+    public RegexQuery getHardestQuery() {
+        synchronized (queries) {
+            if (queries.isEmpty()) {
+                return null;
+            }
+            return queries.last();
+        }
+    }
+
     public void registerListener(QueryPoolListener listener) {
         synchronized (listeners) {
-            if (!listeners.contains(listener)) {
+            if (listener != null && !listeners.contains(listener)) {
                 listeners.add(listener);
             }
         }
