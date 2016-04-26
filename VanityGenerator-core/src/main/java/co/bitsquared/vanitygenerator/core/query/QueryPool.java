@@ -5,6 +5,7 @@ import co.bitsquared.vanitygenerator.core.listeners.QueryPoolListener;
 import co.bitsquared.vanitygenerator.core.network.GlobalNetParams;
 import co.bitsquared.vanitygenerator.core.network.Network;
 import co.bitsquared.vanitygenerator.core.search.PoolSearch;
+import co.bitsquared.vanitygenerator.core.tools.Utils;
 import org.bitcoinj.core.ECKey;
 
 import javax.annotation.Nullable;
@@ -40,9 +41,11 @@ public class QueryPool {
      * Creates an instance of QueryPool with a starting Network.
      * @param network - The network to create the QueryPool instance.
      * @param updateNetworkIfExists - Updates the current network if an instance already exists.
+     * @throws NullPointerException if network is null.
      * @return the single instance of QueryPool.
      */
     public static synchronized QueryPool getInstance(Network network, boolean updateNetworkIfExists) {
+        Utils.checkNotNull(network, "Network cannot be null.");
         if (instance == null) {
             instance = new QueryPool(network);
         } else if (updateNetworkIfExists && instance.network != network) {
@@ -187,9 +190,7 @@ public class QueryPool {
     /**
      * Returns the specified network to search on.
      * @since v1.0.0
-     * @deprecated since v1.3.0
      */
-    @Deprecated
     public Network getNetwork() {
         return network;
     }
