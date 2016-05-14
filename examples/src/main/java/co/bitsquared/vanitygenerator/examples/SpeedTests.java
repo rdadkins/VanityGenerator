@@ -34,10 +34,7 @@ public class SpeedTests {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        for (Runnable thread: service.shutdownNow()) {
-            PoolSearch search = (PoolSearch) thread;
-            search.stop();
-        }
+        service.shutdownNow();
         System.out.println("Max Speed: " + listener.maxSearchSpeed);
     }
 
