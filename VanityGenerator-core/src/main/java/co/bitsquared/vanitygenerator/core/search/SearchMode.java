@@ -16,14 +16,28 @@ public enum SearchMode {
 
     /**
      * Search for one query at a time in terms of difficulty from easiest to hardest. Due to the semantics of this search mode,
-     * findUnlimited setting of each query will be ignored meaning that when a query is found, it will be removed from the collection.
+     * findUnlimited setting of each query will be ignored.
      */
     EASIEST_HARDEST,
 
     /**
      * Search for one query at a time in terms of difficulty from hardest to easiest. Due to the semantics of this search mode,
-     * findUnlimited setting of each query will be ignored meaning that when a query is found, it will be removed from the collection.
+     * findUnlimited setting of each query will be ignored.
      */
-    HARDEST_EASIEST;
+    HARDEST_EASIEST,
+
+    /**
+     * Search for one query at a time in terms of query length from shortest length to longest length. Due to the semantics of this
+     * search mode, findUnlimited setting of each query will be ignored.
+     * <br /><b>NOTE:</b> This only works with queries that are defined via {@link co.bitsquared.vanitygenerator.core.query.Query}
+     */
+    SHORTEST_LONGEST,
+
+    /**
+     * Search for one query at a time in terms of query length from longest length to shortest length. Due to the semantics of this
+     * search mode, findUnlimited setting of each query will be ignored.
+     * <br /><b>NOTE:</b> This only works with queries that are defined via {@link co.bitsquared.vanitygenerator.core.query.Query}
+     */
+    LONGEST_SHORTEST;
 
 }
