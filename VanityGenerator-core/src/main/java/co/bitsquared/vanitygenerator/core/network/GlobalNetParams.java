@@ -1,6 +1,6 @@
 package co.bitsquared.vanitygenerator.core.network;
 
-import co.bitsquared.vanitygenerator.core.exceptions.IllegalDecimalVersionException;
+import co.bitsquared.vanitygenerator.core.tools.Utils;
 import org.bitcoinj.core.NetworkParameters;
 
 import javax.annotation.Nullable;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
  * with the decimal version which is typically found in chainparams.cpp [base58Prefixes] within the source code of
  * their desired coin. An optional script header can be used as well. This class is only meant to contain headers of
  * different networks, so this does not contain items such as port configuration.
- * <b>NOTE</b>: This class is similar to org.bitcoinj.core.Context in bitcoinj 0.13+ but Context will not be used since this
+ * <br/><b>NOTE</b>: This class is similar to org.bitcoinj.core.Context in bitcoinj 0.13+ but Context will not be used since this
  * class was under development before Context's debut, and it is not readily available for use.
  * @see org.bitcoinj.core.ECKey
  * @see org.bitcoinj.core.Address
@@ -37,8 +37,8 @@ public class GlobalNetParams extends NetworkParameters {
     }
 
     public GlobalNetParams(int addressHeader, int privateKeyHeader) {
-        checkDecimal(addressHeader);
-        checkDecimal(privateKeyHeader);
+        Utils.checkIfValidDecimal(addressHeader);
+        Utils.checkIfValidDecimal(privateKeyHeader);
         this.addressHeader = addressHeader;
         this.dumpedPrivateKeyHeader = privateKeyHeader;
         acceptableAddressCodes = new int[] {addressHeader, privateKeyHeader};
@@ -46,9 +46,9 @@ public class GlobalNetParams extends NetworkParameters {
     }
 
     public GlobalNetParams(int addressHeader, int dumpedPrivateKeyHeader, int p2shHeader) {
-        checkDecimal(addressHeader);
-        checkDecimal(dumpedPrivateKeyHeader);
-        checkDecimal(p2shHeader);
+        Utils.checkIfValidDecimal(addressHeader);
+        Utils.checkIfValidDecimal(dumpedPrivateKeyHeader);
+        Utils.checkIfValidDecimal(p2shHeader);
         this.addressHeader = addressHeader;
         this.dumpedPrivateKeyHeader = dumpedPrivateKeyHeader;
         this.p2shHeader = p2shHeader;
@@ -58,7 +58,9 @@ public class GlobalNetParams extends NetworkParameters {
 
     /**
      * Creates a shared instance from a Network.
+     * @deprecated no need for singleton implementation - use regular constructors instead.
      */
+    @Deprecated
     public static GlobalNetParams get(Network network) {
         if (instance == null || instance.getNetwork() != network) {
             instance = new GlobalNetParams(network);
@@ -68,7 +70,9 @@ public class GlobalNetParams extends NetworkParameters {
 
     /**
      * Creates a shared instance from a custom set of headers.
+     * @deprecated no need for singleton implementation - use regular constructors instead.
      */
+    @Deprecated
     public static GlobalNetParams get(int addressHeader, int privateKeyHeader, int p2shHeader) {
         if (instance == null) {
             instance = new GlobalNetParams(addressHeader, privateKeyHeader, p2shHeader);
@@ -81,16 +85,12 @@ public class GlobalNetParams extends NetworkParameters {
 
     /**
      * Gets the latest shared instance. Instance will be null if it was not instantiated via get().
+     * @deprecated no need for singleton implementation - use regular constructors instead.
      */
     @Nullable
+    @Deprecated
     public static synchronized GlobalNetParams getInstance() {
         return instance;
-    }
-
-    private static void checkDecimal(int decimal) {
-        if (decimal < 0 || decimal > 255) {
-            throw new IllegalDecimalVersionException(decimal);
-        }
     }
 
     /**
