@@ -12,13 +12,45 @@ import java.util.ArrayList;
  */
 public enum Network {
 
+    /**
+     * Name: Bitcoin
+     * Public Key Header: 0
+     * Private Key Header: 128
+     * P2SH Header: 5
+     */
     BITCOIN(0, 5, 128),
+
+    /**
+     * Name: Bitcoin Test
+     * Public Key Header: 111
+     * Private Key Header: 239
+     * P2SH Header: 196
+     */
     BITCOIN_TEST(111, 196, 239),
+
+    /**
+     * Name: Litecoin
+     * Public Key Header: 48
+     * Private Key Header: 176
+     * P2SH Header: 5
+     */
     LITECOIN(48, 5, 176),
+
+    /**
+     * Name: Dashcoin (formally Darkcoin)
+     * Public Key Header: 76
+     * Private Key Header: 204
+     * P2SH Header: 16
+     */
     DASHCOIN(76, 16, 204),
-    DOGECOIN(30, 22, 158),
-    @Deprecated
-    MULTI(2, 0);
+
+    /**
+     * Name: Dogecoin
+     * Public Key Header: 30
+     * Private Key Header: 158
+     * P2SH Header: 22
+     */
+    DOGECOIN(30, 22, 158);
 
     private int addressHeader;
     private int privateKeyHeader;
