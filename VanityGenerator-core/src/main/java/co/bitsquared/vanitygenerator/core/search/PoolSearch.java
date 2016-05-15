@@ -104,8 +104,8 @@ public class PoolSearch implements Runnable, QueryPoolListener {
     private void searchAll() {
         ECKey key;
         RegexQuery query;
-        long localGen = 0;
-        while (!forceStop) {
+        long localGen;
+        while (!(forceStop || threadKilled())) {
             key = new ECKey();
             localGen = ++generated;
             if ((query = pool.matches(key, netParams)) != null) {
@@ -129,7 +129,7 @@ public class PoolSearch implements Runnable, QueryPoolListener {
         ECKey key;
         long localGen;
         isSearching = true;
-        while (isSearching) {
+        while (isSearching && !threadKilled()) {
             key = new ECKey();
             localGen = ++generated;
             if (query.matches(key, netParams)) {
@@ -160,6 +160,10 @@ public class PoolSearch implements Runnable, QueryPoolListener {
             query = pool.getEasiestQuery();
         }
         return query;
+    }
+
+    private boolean threadKilled() {
+        return Thread.currentThread().isInterrupted();
     }
 
     public void stop() {

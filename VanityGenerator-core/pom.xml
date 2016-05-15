@@ -7,7 +7,7 @@
     <parent>
         <groupId>co.bitsquared.vanitygenerator</groupId>
         <artifactId>vanitygenerator-parent</artifactId>
-        <version>v1.2.0</version>
+        <version>v1.4.0</version>
     </parent>
 
     <artifactId>VanityGenerator-core</artifactId>
@@ -29,6 +29,7 @@
     <build>
         <plugins>
             <plugin>
+                <version>3.5.1</version>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
