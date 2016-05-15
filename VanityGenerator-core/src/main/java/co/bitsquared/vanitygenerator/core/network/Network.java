@@ -57,16 +57,12 @@ public enum Network {
     private int p2shHeader = -1;
 
     Network(int addressHeader, int p2shHeader, int privateKeyHeader) {
-        this(addressHeader, privateKeyHeader);
-        Utils.checkIfValidDecimal(p2shHeader);
-        this.p2shHeader = p2shHeader;
-    }
-
-    Network(int addressHeader, int privateKeyHeader) {
         Utils.checkIfValidDecimal(addressHeader);
+        Utils.checkIfValidDecimal(p2shHeader);
         Utils.checkIfValidDecimal(privateKeyHeader);
         this.addressHeader = addressHeader;
         this.privateKeyHeader = privateKeyHeader;
+        this.p2shHeader = p2shHeader;
     }
 
     public int getAddressHeader() {
