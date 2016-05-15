@@ -23,7 +23,6 @@ public class ParcelableQuery extends Query implements Parcelable {
 
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(getPlainQuery());
-        dest.writeValue(isBegins());
         dest.writeBooleanArray(new boolean[]{isBegins(), isMatchCase(), isCompressed(), isFindUnlimited(), isP2SH()});
         dest.writeSerializable(getNetworkParameters(null));
     }
