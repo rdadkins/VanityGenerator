@@ -236,6 +236,52 @@ public class QueryPool {
         }
     }
 
+    /**
+     * Returns the shortest query in terms of length of type Query.
+     */
+    public RegexQuery getShortestQuery() {
+        synchronized (queries) {
+            if (queries.isEmpty()) {
+                return null;
+            }
+            RegexQuery shortest = null;
+            int shortestLength = Integer.MAX_VALUE, tempLength;
+            for (RegexQuery query: queries) {
+                if (query instanceof Query) {
+                    tempLength = ((Query) query).getPlainQuery().length();
+                    if (tempLength < shortestLength) {
+                        shortest = query;
+                        shortestLength = tempLength;
+                    }
+                }
+            }
+            return shortest;
+        }
+    }
+
+    /**
+     * Returns the longest query in terms of length of type Query.
+     */
+    public RegexQuery getLongestQuery() {
+        synchronized (queries) {
+            if (queries.isEmpty()) {
+                return null;
+            }
+            RegexQuery longest = null;
+            int longestLength = 0, tempLength;
+            for (RegexQuery query: queries) {
+                if (query instanceof Query) {
+                    tempLength = ((Query) query).getPlainQuery().length();
+                    if (tempLength > longestLength) {
+                        longest = query;
+                        longestLength = tempLength;
+                    }
+                }
+            }
+            return longest;
+        }
+    }
+
     public void registerListener(QueryPoolListener listener) {
         synchronized (listeners) {
             if (listener != null && !listeners.contains(listener)) {
