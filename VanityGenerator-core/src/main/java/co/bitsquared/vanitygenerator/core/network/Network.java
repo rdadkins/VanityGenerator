@@ -50,7 +50,31 @@ public enum Network {
      * Private Key Header: 158
      * P2SH Header: 22
      */
-    DOGECOIN(30, 22, 158);
+    DOGECOIN(30, 22, 158),
+
+    /**
+     * Name: BlackCoin
+     * Public Key Header: 25
+     * Private Key Header: 153
+     * P2SH Header: 85
+     */
+    BLACKCOIN(25, 85, 153),
+
+    /**
+     * Name: Mastercoin
+     * Public Key Header: 0
+     * Private Key Header: 128
+     * P2SH Header: 5
+     */
+    MASTERCOIN(0, 5, 128),
+
+    /**
+     * Name: MazaCoin
+     * Public Key Header: 50
+     * Private Key Header: 224
+     * P2SH Header: 9
+     */
+    MAZACOIN(50, 9, 224);
 
     private int addressHeader;
     private int privateKeyHeader;
