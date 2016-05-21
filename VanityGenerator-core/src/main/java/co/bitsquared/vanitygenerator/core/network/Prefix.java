@@ -167,6 +167,7 @@ public enum Prefix {
             for (int decimal: prefix.versions) {
                 if (value == decimal) {
                     values.add(prefix);
+                    break;
                 }
             }
         }
