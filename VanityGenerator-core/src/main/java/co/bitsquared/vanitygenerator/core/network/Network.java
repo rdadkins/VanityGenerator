@@ -4,7 +4,6 @@ import co.bitsquared.vanitygenerator.core.exceptions.P2SHNotInitializedException
 import co.bitsquared.vanitygenerator.core.tools.Utils;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 
 /**
  * Network is a collection of defined crypto currencies with their pre-configured address header, private key
@@ -89,16 +88,22 @@ public enum Network {
         this.p2shHeader = p2shHeader;
     }
 
+    /**
+     * Returns the public key header for this network. This is the header that is used for public key address formatting.
+     */
     public int getAddressHeader() {
         return addressHeader;
     }
 
+    /**
+     * Returns the private key header for this network. This is the header that is used for private key address formatting.
+     */
     public int getPrivateKeyHeader() {
         return privateKeyHeader;
     }
 
     /**
-     * Returns the P2SH header for this network
+     * Returns the P2SH header for this network. This is the header that is used for P2SH address formatting.
      * @throws P2SHNotInitializedException if this network does not define a P2SH Header
      * @return the P2SH header if it exists.
      */
@@ -109,14 +114,11 @@ public enum Network {
         return p2shHeader;
     }
 
-    public static ArrayList<String> getNetworkNames() {
-        ArrayList<String> networksAsString = new ArrayList<String>();
-        for (Network network: values()) {
-            networksAsString.add(network.name().replace("_", " "));
-        }
-        return networksAsString;
-    }
-
+    /**
+     * Returns the first network whose address header matches addressHeader
+     * @deprecated no use of this method since many different coins share the same headers
+     */
+    @Deprecated
     @Nullable
     public static Network networkFromAddressHeader(int addressHeader) {
         Network network = null;
@@ -144,6 +146,10 @@ public enum Network {
         return network;
     }
 
+    /**
+     * Derives a Network from a public key header, private key header, and a P2SH header. Returns null if the pair does
+     * not exist.
+     */
     @Nullable
     public static Network deriveFrom(int addressHeader, int privateKeyHeader, int p2shHeader) {
         Network network = null;
@@ -156,6 +162,9 @@ public enum Network {
         return network;
     }
 
+    /**
+     * Creates an instance of GlobalNetParams out of this network.
+     */
     public GlobalNetParams toGlobalNetParams() {
         return new GlobalNetParams(this);
     }
