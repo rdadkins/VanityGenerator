@@ -75,9 +75,9 @@ public enum Network {
      */
     MAZACOIN(50, 9, 224);
 
-    private int addressHeader;
-    private int privateKeyHeader;
-    private int p2shHeader = -1;
+    private final int addressHeader;
+    private final int privateKeyHeader;
+    private final int p2shHeader;
 
     Network(int addressHeader, int p2shHeader, int privateKeyHeader) {
         Utils.checkIfValidDecimal(addressHeader);
@@ -108,7 +108,7 @@ public enum Network {
      * @return the P2SH header if it exists.
      */
     public int getP2SHHeader() {
-        if (p2shHeader == -1) {
+        if (p2shHeader < 0) {
             throw new P2SHNotInitializedException(name());
         }
         return p2shHeader;
