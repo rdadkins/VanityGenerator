@@ -81,10 +81,10 @@ public class PoolSearch implements Runnable, QueryPoolListener {
                 customSearch();
                 break;
         }
-        pool.unregisterListener(this);
         if (!pool.containsQueries()) {
             taskCompleted(generated, getGeneratedPerSecond());
         }
+        pool.unregisterListener(this);
     }
 
     @Override
