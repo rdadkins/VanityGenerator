@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 /**
- * Prefix is a compiled list of address headers based off of the Base58 wrapped in an enum.
+ * Prefix is a compiled list of address headers based off of Base58 wrapped in an enum.
  * See https://en.bitcoin.it/wiki/List_of_address_prefixes for more information.
  */
 public enum Prefix {
@@ -78,7 +78,7 @@ public enum Prefix {
     y(2, 139, 140, 141),
     z(2, 141, 142, 143, 144);
 
-    private short[] versions;
+    public final short[] versions;
 
     Prefix(int... intDecimals) {
         versions = new short[intDecimals.length];
