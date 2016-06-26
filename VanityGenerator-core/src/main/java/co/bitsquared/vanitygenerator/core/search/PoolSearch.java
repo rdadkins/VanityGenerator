@@ -70,15 +70,21 @@ public class PoolSearch implements Runnable, QueryPoolListener {
     public void run() {
         pool.registerListener(this);
         setStartTimeToNow();
-        if (searchMode == SearchMode.SEARCH_ALL) {
-            searchAll();
-        } else if (searchMode == SearchMode.EASIEST_HARDEST || searchMode == SearchMode.HARDEST_EASIEST) {
-            searchInOrder();
+        switch (searchMode) {
+            case SEARCH_ALL:
+                searchAll();
+                break;
+            case EASIEST_HARDEST:
+            case HARDEST_EASIEST:
+            case SHORTEST_LONGEST:
+            case LONGEST_SHORTEST:
+                customSearch();
+                break;
         }
-        pool.unregisterListener(this);
         if (!pool.containsQueries()) {
             taskCompleted(generated, getGeneratedPerSecond());
         }
+        pool.unregisterListener(this);
     }
 
     @Override
@@ -120,12 +126,9 @@ public class PoolSearch implements Runnable, QueryPoolListener {
         }
     }
 
-    private void searchInOrder() {
-        System.out.println("SIO " + Thread.currentThread().getId());
+    private void customSearch() {
         RegexQuery query = getNextQuery();
-        if (query == null) {
-            return;
-        }
+        if (query == null) return;
         ECKey key;
         long localGen;
         isSearching = true;
@@ -142,7 +145,7 @@ public class PoolSearch implements Runnable, QueryPoolListener {
             }
         }
         if (!forceStop) {
-            searchInOrder();
+            customSearch();
         }
     }
 
@@ -150,12 +153,21 @@ public class PoolSearch implements Runnable, QueryPoolListener {
         return generated % updateAmount == 0;
     }
 
+    /**
+     * Gets the next query based on the search mode. If for some reason the search mode is not defined, this returns the
+     * easiest query.
+     * @since v1.3.0
+     */
     private RegexQuery getNextQuery() {
         RegexQuery query;
         if (searchMode == SearchMode.EASIEST_HARDEST) {
             query = pool.getEasiestQuery();
         } else if (searchMode == SearchMode.HARDEST_EASIEST) {
             query = pool.getHardestQuery();
+        } else if (searchMode == SearchMode.SHORTEST_LONGEST) {
+            query = pool.getShortestQuery();
+        } else if (searchMode == SearchMode.LONGEST_SHORTEST) {
+            query = pool.getLongestQuery();
         } else {
             query = pool.getEasiestQuery();
         }
