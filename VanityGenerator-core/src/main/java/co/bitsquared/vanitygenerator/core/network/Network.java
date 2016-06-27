@@ -13,65 +13,65 @@ public enum Network {
 
     /**
      * Name: Bitcoin
-     * Public Key Header: 0
-     * Private Key Header: 128
-     * P2SH Header: 5
+     * <p>Public Key Header: 0
+     * <p>Private Key Header: 128
+     * <p>P2SH Header: 5
      */
     BITCOIN(0, 5, 128),
 
     /**
      * Name: Bitcoin Test
-     * Public Key Header: 111
-     * Private Key Header: 239
-     * P2SH Header: 196
+     * <p>Public Key Header: 111
+     * <p>Private Key Header: 239
+     * <p>P2SH Header: 196
      */
     BITCOIN_TEST(111, 196, 239),
 
     /**
      * Name: Litecoin
-     * Public Key Header: 48
-     * Private Key Header: 176
-     * P2SH Header: 5
+     * <p>Public Key Header: 48
+     * <p>Private Key Header: 176
+     * <p>P2SH Header: 5
      */
     LITECOIN(48, 5, 176),
 
     /**
      * Name: Dashcoin (formally Darkcoin)
-     * Public Key Header: 76
-     * Private Key Header: 204
-     * P2SH Header: 16
+     * <p>Public Key Header: 76
+     * <p>Private Key Header: 204
+     * <p>P2SH Header: 16
      */
     DASHCOIN(76, 16, 204),
 
     /**
      * Name: Dogecoin
-     * Public Key Header: 30
-     * Private Key Header: 158
-     * P2SH Header: 22
+     * <p>Public Key Header: 30
+     * <p>Private Key Header: 158
+     * <p>P2SH Header: 22
      */
     DOGECOIN(30, 22, 158),
 
     /**
      * Name: BlackCoin
-     * Public Key Header: 25
-     * Private Key Header: 153
-     * P2SH Header: 85
+     * <p>Public Key Header: 25
+     * <p>Private Key Header: 153
+     * <p>P2SH Header: 85
      */
     BLACKCOIN(25, 85, 153),
 
     /**
      * Name: Mastercoin
-     * Public Key Header: 0
-     * Private Key Header: 128
-     * P2SH Header: 5
+     * <p>Public Key Header: 0
+     * <p>Private Key Header: 128
+     * <p>P2SH Header: 5
      */
     MASTERCOIN(0, 5, 128),
 
     /**
      * Name: MazaCoin
-     * Public Key Header: 50
-     * Private Key Header: 224
-     * P2SH Header: 9
+     * <p>Public Key Header: 50
+     * <p>Private Key Header: 224
+     * <p>P2SH Header: 9
      */
     MAZACOIN(50, 9, 224);
 
