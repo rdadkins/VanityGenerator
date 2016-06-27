@@ -1,7 +1,10 @@
 package co.bitsquared.vanitygenerator.core.network;
 
 import co.bitsquared.vanitygenerator.core.exceptions.IllegalDecimalVersionException;
-import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.core.*;
+import org.bitcoinj.store.BlockStore;
+import org.bitcoinj.store.BlockStoreException;
+import org.bitcoinj.utils.MonetaryFormat;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -14,8 +17,9 @@ import java.util.ArrayList;
  * with the decimal version which is typically found in chainparams.cpp [base58Prefixes] within the source code of
  * their desired coin. An optional script header can be used as well. This class is only meant to contain headers of
  * different networks, so this does not contain items such as port configuration.
- * <b>NOTE</b>: This class is similar to org.bitcoinj.core.Context in bitcoinj 0.13+ but Context will not be used since this
+ * <p><strong>NOTE</strong>: This class is similar to org.bitcoinj.core.Context in bitcoinj 0.13+ but Context will not be used since this
  * class was under development before Context's debut, and it is not readily available for use.
+ *
  * @see org.bitcoinj.core.ECKey
  * @see org.bitcoinj.core.Address
  */
@@ -118,6 +122,46 @@ public class GlobalNetParams extends NetworkParameters {
     @Override
     public String getPaymentProtocolId() {
         return "global";
+    }
+
+    @Override
+    public void checkDifficultyTransitions(StoredBlock storedPrev, Block next, BlockStore blockStore) throws VerificationException, BlockStoreException {
+
+    }
+
+    @Override
+    public Coin getMaxMoney() {
+        return null;
+    }
+
+    @Override
+    public Coin getMinNonDustOutput() {
+        return null;
+    }
+
+    @Override
+    public MonetaryFormat getMonetaryFormat() {
+        return null;
+    }
+
+    @Override
+    public String getUriScheme() {
+        return null;
+    }
+
+    @Override
+    public boolean hasMaxMoney() {
+        return false;
+    }
+
+    @Override
+    public BitcoinSerializer getSerializer(boolean b) {
+        return null;
+    }
+
+    @Override
+    public int getProtocolVersionNum(ProtocolVersion version) {
+        return 0;
     }
 
 }
