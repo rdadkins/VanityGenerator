@@ -43,7 +43,7 @@ public class ParcelableQuery extends Query implements Parcelable {
         }
 
         public ParcelableQuery[] newArray(int size) {
-            return new ParcelableQuery[0];
+            return new ParcelableQuery[size];
         }
 
     };
